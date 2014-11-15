@@ -4,14 +4,28 @@ from django.contrib.auth.models import User
 from django.shortcuts import render, redirect
 from django.views.decorators.csrf import csrf_protect
 
-from forms import RegisterForm
+from forms import RegisterForm, AddForm
 from models import Project
 from django.db.utils import IntegrityError
+
 
 @login_required
 def index(request):
     qs = Project.objects.filter(user=request.user)
     return render(request, 'index.html', {'objects': qs})
+
+@login_required
+def add(request):
+    if request.method == 'POST':
+        f = AddForm(request.POST)
+        if f.is_valid():
+            p = f.save(commit=False)
+            p.user = request.user
+            p.save()
+            return redirect('index')
+    else:
+        f = AddForm()
+    return render(request, 'add.html', {'form': f})
 
 @csrf_protect
 def register(request):

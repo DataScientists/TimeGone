@@ -1,5 +1,5 @@
 from django import forms
-
+from models import Project
 
 class RegisterForm(forms.Form):
     username = forms.CharField()
@@ -15,5 +15,7 @@ class RegisterForm(forms.Form):
             self.add_error('confirm', 'Does not match')
 
             
-
-
+class AddForm(forms.ModelForm):
+    class Meta:
+        model = Project
+        exclude = ('user',)

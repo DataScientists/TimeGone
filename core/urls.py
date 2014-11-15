@@ -6,6 +6,7 @@ from core import views
 urlpatterns = patterns(
     '',
     url(r'^$', views.index, name='index'),
+    url(r'^add/$', views.add, name='add'),
     url(r'^auth/register/$', views.register, name='register'),
     url(r'^auth/logout/$', auth_views.logout_then_login, name='logout')
 )
