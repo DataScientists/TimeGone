@@ -6,16 +6,25 @@
       <div class="row">
 	<div class="col-xs-6">
 	  <form method="POST" action=".">
-	    <legend>Register User</legend>
+	    <legend>New User</legend>
 	    {% csrf_token %}
-	    {{ form|as_bootstrap }}
+	    {{ register_form|as_bootstrap }}
 	    <div class="form-actions">
-	      <button type="submit" class="btn btn-primary">Submit</button>
+	      <button type="submit" class="btn btn-primary"
+		      name="action" value="register">Register</button>
 	    </div>
 	  </form>
 	</div>
 	<div class="col-xs-6">
-	  foobar
+	  <form method="POST" action=".">
+	    <legend>Existing User</legend>
+	    {% csrf_token %}
+	    {{ login_form|as_bootstrap }}
+	    <div class="form-actions">
+	      <button type="submit" class="btn btn-primary"
+		      name="action" value="login">Login</button>
+	    </div>
+	  </form>
 	</div>
       </div>
 {% endblock %}
