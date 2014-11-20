@@ -9,7 +9,8 @@
 		 href="{% url "add" %}">
 		<span class="glyphicon glyphicon-plus" aria-hidden="true"></span>
 		Add
-	      </a>	  
+	      </a>
+	      <a href="{% url 'report' report_date.day report_date.month report_date.year %}">report</a>
 	    </caption>
 	    <thead>
 	      <tr>

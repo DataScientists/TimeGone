@@ -1,0 +1,47 @@
+{% extends "base.html" %}
+
+{% load bootstrap_tags %}
+
+{% block content %}
+      <div class="row">
+	<div class="col-xs-6">
+	  <a href="{% url 'index' %}" class="btn">
+		<span class="glyphicon glyphicon-arrow-left"></span>
+		Projects</a>
+	</div>
+	<div class="col-xs-6">
+		  <!-- calendar here -->
+	</div>
+      </div>
+      <div class="row">
+	<div class="col-xs-6">
+	  <table class="table">
+	    <thead>
+	      <tr>
+		<th>Project</th>
+		<th>Hours</th>
+	      </tr>
+	    </thead>
+	    <tbody>
+	      {% for x in report %}
+	      <tr>
+		<td class="{{ x.legend_class }}">{{ x.name }}</td>
+		<td>{{ x.hours }}</td>
+	      </tr>
+	      {% endfor %}
+	    </tbody>
+	  </table>
+	</div>
+	<div class="col-xs-6">
+	  <div class="progress">
+	    {% for x in report %}
+	    <div class="progress-bar {{ x.color_class }}" 
+		 style="width: {{ x.percent }}%">
+	      <span class="sr-only">{{ x.percent }}% {{ x.name }}</span>
+	      {{ x.percent }}%
+	    </div>
+	    {% endfor %}
+	  </div>
+	</div>
+      </div>
+{% endblock %}
