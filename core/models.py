@@ -13,5 +13,5 @@ class TrackedTime(models.Model):
     project = models.ForeignKey(Project)
     created_at = models.DateTimeField(auto_now_add=True)
     hours = models.FloatField(validators=[MinValueValidator(0)])
-    
+    activity = models.CharField(max_length=255, default='')
     

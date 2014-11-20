@@ -30,4 +30,6 @@ class AddForm(forms.ModelForm):
 class TrackTimeForm(forms.ModelForm):
     class Meta:
         model = TrackedTime
-        fields = ('hours',)
+        exclude = ('user', 'project', 'created_at')
+    hours = forms.FloatField(widget=forms.NumberInput(
+        attrs={'min': 0}))
