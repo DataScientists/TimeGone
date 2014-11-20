@@ -1,5 +1,5 @@
 from django import forms
-from models import Project
+from models import Project, TrackedTime
 
 
 class RegisterForm(forms.Form):
@@ -25,3 +25,9 @@ class AddForm(forms.ModelForm):
     class Meta:
         model = Project
         exclude = ('user',)
+
+
+class TrackTimeForm(forms.ModelForm):
+    class Meta:
+        model = TrackedTime
+        fields = ('hours',)

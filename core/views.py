@@ -1,13 +1,28 @@
 from django.contrib.auth import authenticate, login
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import User
-from django.shortcuts import render, redirect
+from django.shortcuts import render, redirect, get_object_or_404
 from django.views.decorators.csrf import csrf_protect
 
-from forms import RegisterForm, AddForm, LoginForm
+from forms import RegisterForm, AddForm, LoginForm, TrackTimeForm
 from models import Project
 from django.db.utils import IntegrityError
 
+
+@login_required
+def track(request, _id):
+    project = get_object_or_404(Project, id=_id)
+    if request.method == 'POST':
+        f = TrackTimeForm(request.POST)
+        if f.is_valid():
+            tr = f.save(commit=False)
+            tr.project = project
+            tr.user = request.user
+            tr.save()
+            return redirect('index')
+    else:
+        f = TrackTimeForm()
+    return render(request, 'track.html', {'form': f, 'project': project})
 
 @login_required
 def index(request):

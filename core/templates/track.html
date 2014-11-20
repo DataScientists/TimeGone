@@ -1,0 +1,21 @@
+{% extends "base.html" %}
+
+{% load bootstrap_tags %}
+
+{% block content %}
+      <div class="row">
+	<div class="col-xs-12">
+	  <form method="POST" action=".">
+	    <legend>Track Time for {{ project.name }}</legend>
+	    {% csrf_token %}
+	    {{ form|as_bootstrap }}
+	    <div class="form-actions">
+	      <a href="{% url 'index' %}" class="btn">
+		<span class="glyphicon glyphicon-arrow-left"></span>
+		Projects</a>
+	      <button type="submit" class="btn btn-primary">Submit</button>
+	    </div>
+	  </form>
+	</div>
+      </div>
+{% endblock %}
