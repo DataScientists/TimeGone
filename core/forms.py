@@ -1,5 +1,24 @@
 from django import forms
-from models import Project, TrackedTime
+from models import Project, TrackedTime, Timezone
+
+
+class TimezoneForm(forms.ModelForm):
+    class Meta:
+        model = Timezone
+        fields = ('timezone',)
+
+
+class PasswordForm(forms.Form):
+    old_password = forms.CharField(widget=forms.PasswordInput)
+    new_password = forms.CharField(widget=forms.PasswordInput)
+    confirm = forms.CharField(widget=forms.PasswordInput)
+
+    def clean(self):
+        cleaned_data = super(self.__class__, self).clean()
+        p = cleaned_data.get('new_password')
+        c = cleaned_data.get('confirm')
+        if (p and c and p != c):
+            self.add_error('confirm', 'Does not match')
 
 
 class RegisterForm(forms.Form):
@@ -9,7 +28,7 @@ class RegisterForm(forms.Form):
     confirm = forms.CharField(widget=forms.PasswordInput)
 
     def clean(self):
-        cleaned_data = super(RegisterForm, self).clean()
+        cleaned_data = super(self.__class__, self).clean()
         p = cleaned_data.get('password')
         c = cleaned_data.get('confirm')
         if (p and c and p != c):

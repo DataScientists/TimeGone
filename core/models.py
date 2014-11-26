@@ -1,6 +1,7 @@
 from django.db import models
 from django.contrib.auth.models import User
 from django.core.validators import MinValueValidator
+from timezone_field import TimeZoneField
 
 
 class Project(models.Model):
@@ -16,3 +17,8 @@ class TrackedTime(models.Model):
     created_at = models.DateTimeField(auto_now_add=True)
     hours = models.FloatField(validators=[MinValueValidator(0)])
     activity = models.CharField(max_length=255, default='')
+
+
+class Timezone(models.Model):
+    user = models.ForeignKey(User)
+    timezone = TimeZoneField(default='Europe/London')

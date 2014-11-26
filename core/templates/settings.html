@@ -6,25 +6,26 @@
 <div class="row">
   <div class="col-xs-6">
     <form method="POST" action=".">
-      <legend>New User</legend>
+      <legend>Change Password</legend>
       {% csrf_token %}
-      {{ register_form|as_bootstrap }}
+      {{ password_form|as_bootstrap }}
       <div class="form-actions">
 	<button type="submit" class="btn btn-primary"
-		name="action" value="register">Register</button>
+		name="action" value="password">Submit</button>
       </div>
     </form>
   </div>
   <div class="col-xs-6">
     <form method="POST" action=".">
-      <legend>Existing User</legend>
+      <legend>Select Timezone</legend>
       {% csrf_token %}
-      {{ login_form|as_bootstrap }}
+      {{ tz_form|as_bootstrap }}
       <div class="form-actions">
 	<button type="submit" class="btn btn-primary"
-		name="action" value="login">Login</button>
+		name="action" value="tz">Submit</button>
       </div>
     </form>
   </div>
 </div>
+
 {% endblock %}

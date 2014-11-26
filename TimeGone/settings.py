@@ -88,3 +88,8 @@ USE_TZ = True
 
 STATIC_URL = '/static/'
 LOGIN_URL = '/auth/register/'
+
+try:
+    from local_settings import *
+except ImportError:
+    pass

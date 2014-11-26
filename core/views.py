@@ -8,10 +8,53 @@ from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import User
 from django.shortcuts import render, redirect, get_object_or_404
 from django.views.decorators.csrf import csrf_protect
+from django.contrib import messages
 
-from forms import RegisterForm, AddForm, LoginForm, TrackTimeForm
-from models import Project, TrackedTime
+from forms import (
+    RegisterForm, AddForm, LoginForm, TrackTimeForm,
+    PasswordForm, TimezoneForm)
+from models import Project, TrackedTime, Timezone
 from django.db.utils import IntegrityError
+
+
+@login_required
+def settings(request):
+    if request.method == 'POST':
+        if 'password' == request.POST.get('action'):
+            pf = PasswordForm(request.POST)
+            tf = TimezoneForm()
+
+            if pf.is_valid():
+                ok = request.user.check_password(
+                    pf.cleaned_data['old_password'])
+                if ok:
+                    request.user.set_password(
+                        pf.cleaned_data['new_password'])
+                    messages.success(request,
+                                     'Password was changed.')
+                    return redirect(request.path)
+                else:
+                    pf.add_error('old_password',
+                                 'Wrong old password')
+        elif 'tz' == request.POST.get('action'):
+            pf = PasswordForm()
+            obj, created = Timezone.objects.get_or_create(
+                user=request.user)
+            tf = TimezoneForm(request.POST, instance=obj)
+            if tf.is_valid():
+                tz = tf.save()
+                messages.success(request,
+                                 'Timezone set to {}'.format(
+                                     tz.timezone))
+                return redirect(request.path)
+        else:
+            pf = PasswordForm()
+            tf = TimezoneForm()
+    else:
+        pf = PasswordForm()
+        tf = TimezoneForm()
+    return render(request, 'settings.html', {'password_form': pf,
+                                             'tz_form': tf})
 
 
 @login_required
