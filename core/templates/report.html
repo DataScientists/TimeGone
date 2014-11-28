@@ -35,13 +35,40 @@
 	<div class="col-xs-6">
 	  <div class="progress">
 	    {% for x in report %}
-	    <div class="progress-bar {{ x.color_class }}" 
+	    <div class="progress-bar {{ x.color_class }}"
 		 style="width: {{ x.percent }}%">
 	      <span class="sr-only">{{ x.percent }}% {{ x.name }}</span>
 	      {{ x.percent }}%
 	    </div>
 	    {% endfor %}
 	  </div>
+	</div>
+      </div>
+      <div class="row">
+	<div class="cols-xs-12">
+	  <table  class="table">
+	    <thead>
+	      <caption>Detailed&nbsp;Report</caption>
+	      <tr>
+		<th>Hours</th>
+		<th>Activity</th>
+	      </tr>
+	    </thead>
+	    <tbody>
+	  {% for project, timeset in detailed %}
+	  <tr class="info">
+	    <td colspan="2"><b>{{ project.name }}</b></td>
+	  <tr>
+	    {% for hours, activity in timeset %}
+	  <tr>
+	    <td>{{ hours }}</td>
+	    <td>{{ activity }}</td>
+	  </tr>
+	  {% endfor %}
+	  {% endfor %}
+	    </tbody>
+	  </table>
+
 	</div>
       </div>
 {% endblock %}

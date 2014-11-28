@@ -1,4 +1,5 @@
 from __future__ import division
+import logging
 import time
 from datetime import datetime
 
@@ -66,9 +67,10 @@ def report(request, day, month, year):
     ending = datetime(year, month, day, 23, 59, 59)
     qs = TrackedTime.objects.filter(user=request.user,
                                     created_at__gt=beginning,
-                                    created_at__lt=ending)
+                                    created_at__lt=ending).order_by('id')
     current_color = 0
     result = {}
+    detailed = {}
     for x in qs:
         if x.project.id not in result:
             result[x.project.id] = {
@@ -78,6 +80,10 @@ def report(request, day, month, year):
             }
             current_color += 1
         result[x.project.id]['hours'] += x.hours
+        detailed.setdefault(x.project.id, {'project': x.project,
+                                           'timeset': []})
+        detailed[x.project.id]['timeset'].append((x.hours, x.activity))
+    detailed = [(v['project'], v['timeset']) for k, v in detailed.items()]
     color_classes = (
         ('progress-bar-primary', 'text-primary'),
         ('progress-bar-success', 'text-success'),
@@ -97,7 +103,8 @@ def report(request, day, month, year):
     report.sort(key=lambda x: x['name'])
     return render(request, 'report.html',
                   {'year': year, 'month': month, 'day': day,
-                   'report': report})
+                   'report': report,
+                   'detailed': detailed})
 
 
 @login_required
