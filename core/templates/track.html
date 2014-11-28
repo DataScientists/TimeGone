@@ -19,3 +19,12 @@
 	</div>
       </div>
 {% endblock %}
+
+{% block js %}
+      <script type="text/javascript">
+	$(function(){
+          $('.datepicker').datepicker({
+            format: 'dd/mm/yyyy'
+          })});
+      </script>
+{% endblock %}

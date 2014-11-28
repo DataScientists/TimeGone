@@ -1,7 +1,6 @@
 from __future__ import division
-import logging
 import time
-from datetime import datetime
+from datetime import date
 
 
 from django.contrib.auth import authenticate, login
@@ -12,7 +11,7 @@ from django.views.decorators.csrf import csrf_protect
 from django.contrib import messages
 
 from forms import (
-    RegisterForm, AddForm, LoginForm, TrackTimeForm,
+    RegisterForm, CreateProjectForm, LoginForm, TrackTimeForm,
     PasswordForm, TimezoneForm)
 from models import Project, TrackedTime, Timezone
 from django.db.utils import IntegrityError
@@ -63,11 +62,12 @@ def report(request, day, month, year):
     year = int(year)
     month = int(month)
     day = int(day)
-    beginning = datetime(year, month, day, 0, 0, 0)
-    ending = datetime(year, month, day, 23, 59, 59)
-    qs = TrackedTime.objects.filter(user=request.user,
-                                    created_at__gt=beginning,
-                                    created_at__lt=ending).order_by('id')
+    x_day = date(year, month, day)
+
+    qs = TrackedTime.objects.filter(
+        user=request.user,
+        track_date=x_day).order_by('id')
+
     current_color = 0
     result = {}
     detailed = {}
@@ -113,10 +113,21 @@ def track(request, _id):
     if request.method == 'POST':
         f = TrackTimeForm(request.POST)
         if f.is_valid():
-            tr = f.save(commit=False)
-            tr.project = project
-            tr.user = request.user
-            tr.save()
+            obj = f.save(commit=False)
+            obj.project = project
+            obj.user = request.user
+            if f.cleaned_data['track_date'] is None:
+                obj.manual_date = False
+                (d, m, y) = map(int,
+                                time.strftime('%d/%m/%Y').split('/'))
+                obj.track_date = date(y, m, d)
+            else:
+                obj.manual_date = True
+            obj.save()
+            messages.success(
+                request,
+                'Added {} hours for {} at date {}'.format(
+                    obj.hours, obj.activity, obj.track_date))
             return redirect('index')
     else:
         f = TrackTimeForm()
@@ -137,14 +148,14 @@ def index(request):
 @login_required
 def add(request):
     if request.method == 'POST':
-        f = AddForm(request.POST)
+        f = CreateProjectForm(request.POST)
         if f.is_valid():
             p = f.save(commit=False)
             p.user = request.user
             p.save()
             return redirect('index')
     else:
-        f = AddForm()
+        f = CreateProjectForm()
     return render(request, 'add.html', {'form': f})
 
 

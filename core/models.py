@@ -14,9 +14,11 @@ class Project(models.Model):
 class TrackedTime(models.Model):
     user = models.ForeignKey(User)
     project = models.ForeignKey(Project)
+    track_date = models.DateField(null=True)
     created_at = models.DateTimeField(auto_now_add=True)
     hours = models.FloatField(validators=[MinValueValidator(0)])
     activity = models.CharField(max_length=255, default='')
+    manual_date = models.BooleanField(default=False)
 
 
 class Timezone(models.Model):

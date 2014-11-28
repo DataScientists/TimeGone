@@ -54,17 +54,6 @@
     <!-- Include all compiled plugins (below), or include individual files as needed -->
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.0/js/bootstrap.min.js"></script>
     <script src="{{ STATIC_URL }}js/bootstrap-datepicker.js"></script>
-    <script type="text/javascript">
-      $(function(){
-        $('.datepicker').datepicker({
-          format: 'dd/mm/yyyy'
-        }).on('changeDate', function(e){
-          var d = e.date;
-          var s = d.getDate() + '/' + (d.getMonth() + 1) + '/' + d.getFullYear();
-          window.location = '/report/' + s + '/';
-        });
-      });
-    </script>
-
+    {% block js %}{% endblock %}
   </body>
 </html>
