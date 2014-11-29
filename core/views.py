@@ -59,7 +59,7 @@ def settings(request):
 
 
 @login_required
-def report(request, day, month, year):
+def report(request, year, month, day):
     year = int(year)
     month = int(month)
     day = int(day)
@@ -110,6 +110,19 @@ def report(request, day, month, year):
                    'detailed': detailed})
 
 
+def get_user_date(user):
+    if user.timezone_set.exists():
+        tz = user.timezone_set.all()[0].timezone
+        try:
+            a = arrow.now(tz)
+        except arrow.parser.ParserError:
+            a = arrow.utcnow()
+            logging.error('unknown tz %s for user %s', tz, user.id)
+    else:
+        a = arrow.utcnow()
+    return a
+
+
 @login_required
 def track(request, _id):
     project = get_object_or_404(Project, id=_id, user=request.user)
@@ -121,15 +134,7 @@ def track(request, _id):
             obj.user = request.user
             if f.cleaned_data['track_date'] is None:
                 obj.manual_date = False
-                if request.user.timezone_set.exists():
-                    tz = request.user.timezone_set.all()[0].timezone
-                    try:
-                        a = arrow.now(tz)
-                    except arrow.parser.ParserError:
-                        a = arrow.utcnow()
-                        logging.error('unknown tz %s for user %s', tz, request.user.id)
-                else:
-                    a = arrow.utcnow()
+                a = get_user_date(request.user)
                 obj.track_date = a.date()
             else:
                 obj.manual_date = True
@@ -147,10 +152,10 @@ def track(request, _id):
 @login_required
 def index(request):
     qs = Project.objects.filter(user=request.user)
-    report_date = time.strftime('%d/%m/%Y').split('/')
-    report_date = {'day': report_date[0],
-                   'month': report_date[1],
-                   'year': report_date[2]}
+    a = get_user_date(request.user)
+    report_date = {'day': a.day,
+                   'month': a.month,
+                   'year': a.year}
     return render(request, 'index.html',
                   {'objects': qs, 'report_date': report_date})
 

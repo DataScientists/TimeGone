@@ -54,13 +54,8 @@ class TrackTimeForm(forms.ModelForm):
     hours = forms.FloatField(widget=forms.NumberInput(
         attrs={'min': 0}))
     track_date = forms.DateField(
-        input_formats=['%d/%m/%Y'],
         required=False,
         widget=forms.DateInput(attrs={'class': 'datepicker'}))
 
     def __init__(self, *args, **kwargs):
         super(TrackTimeForm, self).__init__(*args, **kwargs)
-        self.fields.keyOrder = [
-            'activity',
-            'hours',
-            'track_date']
