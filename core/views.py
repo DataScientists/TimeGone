@@ -2,6 +2,7 @@ from __future__ import division
 import time
 from datetime import date
 
+import arrow
 
 from django.contrib.auth import authenticate, login
 from django.contrib.auth.decorators import login_required
@@ -118,9 +119,16 @@ def track(request, _id):
             obj.user = request.user
             if f.cleaned_data['track_date'] is None:
                 obj.manual_date = False
-                (d, m, y) = map(int,
-                                time.strftime('%d/%m/%Y').split('/'))
-                obj.track_date = date(y, m, d)
+                if request.user.timezone_set.exists():
+                    tz = request.user.timezone_set.all()[0].timezone
+                    try:
+                        a = arrow.now(tz)
+                    except arrow.parser.ParserError:
+                        a = arrow.utcnow()
+                        logging.error('unknown tz %s for user %s', tz, request.user.id)
+                else:
+                    a = arrow.utcnow()
+                obj.track_date = a.date()
             else:
                 obj.manual_date = True
             obj.save()
