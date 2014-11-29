@@ -72,6 +72,7 @@ def report(request, day, month, year):
     current_color = 0
     result = {}
     detailed = {}
+    total_hours = 0
     for x in qs:
         if x.project.id not in result:
             result[x.project.id] = {
@@ -81,6 +82,7 @@ def report(request, day, month, year):
             }
             current_color += 1
         result[x.project.id]['hours'] += x.hours
+        total_hours += x.hours
         detailed.setdefault(x.project.id, {'project': x.project,
                                            'timeset': []})
         detailed[x.project.id]['timeset'].append((x.hours, x.activity))
@@ -98,7 +100,7 @@ def report(request, day, month, year):
                'color_class': color_classes[v['color']][0],
                'legend_class': color_classes[v['color']][1],
                'name': v['name'], 'hours': v['hours'],
-               'percent': v['hours'] / 24 * 100}
+               'percent': v['hours'] / total_hours * 100}
               for k, v
               in result.items()]
     report.sort(key=lambda x: x['name'])
