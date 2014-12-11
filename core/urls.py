@@ -5,7 +5,8 @@ from core import views
 
 urlpatterns = patterns(
     '',
-    url(r'^$', views.index, name='index'),
+    url(r'^$', views.dashboard, name='dashboard'),
+    url(r'^projects/$', views.projects, name='projects'),
     url(r'^add/$', views.add, name='add'),
     url(r'^settings/$', views.settings, name='settings'),
     url(r'^report/(\d{4})-(\d+)-(\d+)/$', views.report, name='report'),

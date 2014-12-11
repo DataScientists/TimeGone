@@ -1,0 +1,21 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="row">
+  <div class="col-xs-12">
+    <select id="dates">
+      {% for x in dates %}
+      <option value="{{ x.0 }}">{{ x.1 }}</option>
+      {% endfor %}
+    </select>
+    <br>
+    <br>
+    <canvas id="graph" width="180" height="360" 
+	    style="border: 1px silver solid; padding: 3px;">
+    </canvas>    
+  </div>
+</div>
+{% endblock %}
+{% block js %}
+<script type="text/javascript">window.graph = {{ graph|safe }}.g;</script>
+<script type="text/javascript" src="{{ STATIC_URL }}/js/dashboard.js"></script>
+{% endblock %}

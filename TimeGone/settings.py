@@ -75,9 +75,9 @@ LANGUAGE_CODE = 'en-us'
 
 TIME_ZONE = 'UTC'
 
-USE_I18N = True
+USE_I18N = False
 
-USE_L10N = True
+USE_L10N = False
 
 USE_TZ = True
 
@@ -87,6 +87,8 @@ USE_TZ = True
 
 STATIC_URL = '/static/'
 LOGIN_URL = '/auth/register/'
+
+SHORT_DATE_FORMAT = 'Y-m-d'
 
 try:
     from local_settings import *

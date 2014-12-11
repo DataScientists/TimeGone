@@ -1,5 +1,8 @@
 from __future__ import division
+
+import json
 import time
+
 from datetime import date
 
 import arrow
@@ -7,15 +10,19 @@ import arrow
 from django.contrib.auth import authenticate, login
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import User
-from django.shortcuts import render, redirect, get_object_or_404
-from django.views.decorators.csrf import csrf_protect
 from django.contrib import messages
+from django.db.models import Sum
+from django.db.utils import IntegrityError
+from django.http import HttpResponse
+from django.shortcuts import render, redirect, get_object_or_404
+from django.utils import formats
+from django.views.decorators.csrf import csrf_protect
+
 
 from forms import (
     RegisterForm, CreateProjectForm, LoginForm, TrackTimeForm,
     PasswordForm, TimezoneForm)
 from models import Project, TrackedTime, Timezone
-from django.db.utils import IntegrityError
 
 
 @login_required
@@ -110,16 +117,26 @@ def report(request, year, month, day):
                    'detailed': detailed})
 
 
-def get_user_date(user):
+def get_user_date(user, d=None):
     if user.timezone_set.exists():
         tz = user.timezone_set.all()[0].timezone
         try:
-            a = arrow.now(tz)
+            if d is None:
+                a = arrow.now(tz)
+            else:
+                a = arrow.Arrow.strptime(d, '%Y-%m-%d', tz)
         except arrow.parser.ParserError:
-            a = arrow.utcnow()
-            logging.error('unknown tz %s for user %s', tz, user.id)
+            logging.exception('invalid tz %s for user %s', tz, user.id)
+            if d is None:
+                a = arrow.utcnow()
+            else:
+                a = arrow.Arrow.strptime(d, '%Y-%m-%d')
     else:
-        a = arrow.utcnow()
+        logging.error('missing tz for user %s', user.id)
+        if d is None:
+            a = arrow.utcnow()
+        else:
+            a = arrow.Arrow.strptime(d, '%Y-%m-%d')
     return a
 
 
@@ -143,20 +160,51 @@ def track(request, _id):
                 request,
                 'Added {} hours for {} at date {}'.format(
                     obj.hours, obj.activity, obj.track_date))
-            return redirect('index')
+            return redirect('projects')
     else:
         f = TrackTimeForm()
     return render(request, 'track.html', {'form': f, 'project': project})
 
 
 @login_required
-def index(request):
+def dashboard(request):
+    if request.is_ajax():
+        a = get_user_date(request.user, str(request.GET['date']))
+    else:
+        a = get_user_date(request.user)
+    adate = a.date()
+    graph = json.dumps({
+        'g': list(TrackedTime.objects.filter(user=request.user,
+                                             track_date=adate)\
+                  .values('project', 'project__name')\
+                  .annotate(hours=Sum('hours'))\
+                  .order_by('project__name'))})
+    if request.is_ajax():        
+        return HttpResponse(graph)
+    else:    
+        qs = TrackedTime.objects.filter(user=request.user)\
+                                .distinct()\
+                                .values('track_date')\
+                                .order_by('-track_date')
+        dates = [x['track_date'] for x in qs]
+        dates = [formats.date_format(x, 'SHORT_DATE_FORMAT') for x in dates]
+        dates = [(x, x) for x in dates]
+        if adate != dates[0]:
+            dates.insert(0, (adate, 'TODAY'))
+        else:
+            dates[0] = (adate, 'TODAY')
+        return render(request, 'dashboard.html', 
+                      {'graph': graph, 'dates': dates})
+    
+
+@login_required
+def projects(request):
     qs = Project.objects.filter(user=request.user)
     a = get_user_date(request.user)
     report_date = {'day': a.day,
                    'month': a.month,
                    'year': a.year}
-    return render(request, 'index.html',
+    return render(request, 'projects.html',
                   {'objects': qs, 'report_date': report_date})
 
 
@@ -168,7 +216,7 @@ def add(request):
             p = f.save(commit=False)
             p.user = request.user
             p.save()
-            return redirect('index')
+            return redirect('projects')
     else:
         f = CreateProjectForm()
     return render(request, 'add.html', {'form': f})
@@ -201,7 +249,7 @@ def register(request):
                         username=register_f.cleaned_data['username'],
                         password=register_f.cleaned_data['password'])
                     login(request, user)
-                    return redirect('index')
+                    return redirect('projects')
         elif a == 'login':
             register_f = RegisterForm()
             login_f = LoginForm(request.POST)
@@ -214,7 +262,7 @@ def register(request):
                                       'Wrong credentials')
                 else:
                     login(request, user)
-                    return redirect('index')
+                    return redirect('projects')
         else:
             register_f = RegisterForm()
             login_f = LoginForm()
