@@ -41,9 +41,13 @@ class LoginForm(forms.Form):
 
 
 class CreateProjectForm(forms.ModelForm):
+    class Media:
+        js = ('js/create_project_color.js',)
     class Meta:
         model = Project
         exclude = ('user',)
+    color = forms.CharField(widget=forms.Select(
+        choices=Project.COLOR_CHOICES))
 
 
 class TrackTimeForm(forms.ModelForm):
