@@ -168,11 +168,21 @@ def track(request, _id):
 
 @login_required
 def dashboard(request):
-    if request.is_ajax():
-        a = get_user_date(request.user, str(request.GET['date']))
+    if 'date' in request.GET:
+        selected_date = str(request.GET['date'])
     else:
-        a = get_user_date(request.user)
-    adate = a.date()
+        selected_date = None
+    if request.is_ajax():
+        a = get_user_date(request.user, selected_date)
+    else:
+        if date is None:
+            a = get_user_date(request.user)
+        else:
+            a = get_user_date(request.user, selected_date)
+    adate = a.date() # datetime.date for today
+    today_date = formats.date_format(adate, 'SHORT_DATE_FORMAT')
+    if not selected_date:
+        selected_date = today_date
     graph = json.dumps({
         'g': list(TrackedTime.objects.filter(user=request.user,
                                              track_date=adate)\
@@ -187,14 +197,14 @@ def dashboard(request):
                                 .values('track_date')\
                                 .order_by('-track_date')
         dates = [x['track_date'] for x in qs]
-        dates = [formats.date_format(x, 'SHORT_DATE_FORMAT') for x in dates]
-        dates = [(x, x) for x in dates]
         if adate != dates[0]:
-            dates.insert(0, (adate, 'TODAY'))
-        else:
-            dates[0] = (adate, 'TODAY')
+            dates.insert(0, adate)
+        dates = [formats.date_format(x, 'SHORT_DATE_FORMAT') for x in dates]
+        dates = [(x, x if x != today_date else 'TODAY') for x in dates]
         return render(request, 'dashboard.html', 
-                      {'graph': graph, 'dates': dates})
+                      {'graph': graph, 'dates': dates, 
+                       'selected_date': selected_date,
+                       'today_date': today_date})
     
 
 @login_required
@@ -249,7 +259,7 @@ def register(request):
                         username=register_f.cleaned_data['username'],
                         password=register_f.cleaned_data['password'])
                     login(request, user)
-                    return redirect('projects')
+                    return redirect('dashboard')
         elif a == 'login':
             register_f = RegisterForm()
             login_f = LoginForm(request.POST)
@@ -262,7 +272,7 @@ def register(request):
                                       'Wrong credentials')
                 else:
                     login(request, user)
-                    return redirect('projects')
+                    return redirect('dashboard')
         else:
             register_f = RegisterForm()
             login_f = LoginForm()

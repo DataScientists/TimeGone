@@ -4,7 +4,7 @@
   <div class="col-xs-12">
     <select id="dates">
       {% for x in dates %}
-      <option value="{{ x.0 }}">{{ x.1 }}</option>
+      <option value="{{ x.0 }}" {% ifequal selected_date x.0 %}selected=selected{% endifequal %}>{{ x.1 }}</option>
       {% endfor %}
     </select>
     <br>
@@ -16,6 +16,9 @@
 </div>
 {% endblock %}
 {% block js %}
-<script type="text/javascript">window.graph = {{ graph|safe }}.g;</script>
+<script type="text/javascript">
+window.graph = {{ graph|safe }}.g;
+window.today_date = '{{ today_date }}';
+</script>
 <script type="text/javascript" src="{{ STATIC_URL }}/js/dashboard.js"></script>
 {% endblock %}

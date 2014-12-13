@@ -1,5 +1,4 @@
 function draw(data){
-    console.log(data);
     var c = document.getElementById('graph');
     var w = c.width;
     var h = c.height;
@@ -10,7 +9,7 @@ function draw(data){
     ctx.save()
     ctx.rotate(-Math.PI/2)
     for (var i = 0; i < 24; i++){
-	ctx.fillText(i, - h + i * (h/24), 10);
+	ctx.fillText('|', - h + i * (h/24), 10);
     }
     ctx.restore()
     var base = 0;
@@ -21,28 +20,30 @@ function draw(data){
     for (var i = 0; i < data.length; i++){
 	ctx.fillStyle = colors[i];
 	height = (data[i]['hours'] / 24) * h;
-	console.log(i, height);
 	ctx.fillRect(15, h - (base + height), w - 15, height);
 	ctx.strokeRect(15, h - (base + height), w - 15, height);
 	base = base + height;
     }
-    
 }
 $(document).ready(function(){
-    var $x = $('#dates');
-    $x.change(function(){
-	var settings = {
-	    'data': {'date': $x.val()},
-	    'async': false,
-	    'dataType': 'json',
-	    'success': function(data){
-		console.log(data);
-		console.log(data.g);
-		draw(data.g);
-	    }
-	};
-	console.log(settings);
-	$.ajax(settings);
-    });
-    draw(graph);
+  var $x = $('#dates');
+  $x.change(function(){
+    var date = $x.val()
+    var settings = {
+      'data': {'date': date},
+      'async': false,
+      'dataType': 'json',
+      'success': function(data){
+	draw(data.g);
+	if (date == window.today_date){
+	  window.history.pushState({}, window.document.title, '/');
+	} else {
+	  window.history.pushState({}, window.document.title, '/?date=' + date);
+	}
+      }
+    };
+    console.log(settings);
+    $.ajax(settings);
+  });
+  draw(graph);
 });
