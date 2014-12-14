@@ -63,3 +63,12 @@ class TrackTimeForm(forms.ModelForm):
 
     def __init__(self, *args, **kwargs):
         super(TrackTimeForm, self).__init__(*args, **kwargs)
+
+
+class QuickTrackForm(forms.ModelForm):
+    class Meta:
+        model = TrackedTime
+        exclude = ('user', 'created_at', 'manual_date', 'track_date')
+    hours = forms.FloatField(widget=forms.NumberInput(
+        attrs={'min': 0}))
+    

@@ -21,7 +21,7 @@ from django.views.decorators.csrf import csrf_protect
 
 from forms import (
     RegisterForm, CreateProjectForm, LoginForm, TrackTimeForm,
-    PasswordForm, TimezoneForm)
+    PasswordForm, TimezoneForm, QuickTrackForm)
 from models import Project, TrackedTime, Timezone
 
 
@@ -159,7 +159,7 @@ def track(request, _id):
             messages.success(
                 request,
                 'Added {} hours for {} at date {}'.format(
-                    obj.hours, obj.activity, obj.track_date))
+                    obj.hours, obj.activity, fdate(obj.track_date)))
             return redirect('projects')
     else:
         f = TrackTimeForm()
@@ -173,11 +173,11 @@ def get_graph(user, date):
                   .annotate(hours=Sum('hours'))
                   .order_by('project__name'))})
 
+def fdate(x):
+    return formats.date_format(x, 'SHORT_DATE_FORMAT')
+
 @login_required
 def dashboard(request):
-    def fdate(x):
-        return formats.date_format(x, 'SHORT_DATE_FORMAT')
-
     if request.is_ajax():
         selected = get_user_date(request.user, str(request.GET['date']))
         response = HttpResponse(get_graph(request.user, selected.date()))
@@ -203,7 +203,6 @@ def dashboard(request):
                    'selected_date': fdate(selected),
                    'today_date': fdate(today)})
     
-
 @login_required
 def projects(request):
     qs = Project.objects.filter(user=request.user)
@@ -278,3 +277,28 @@ def register(request):
         login_f = LoginForm()
     return render(request, 'register.html', {'register_form': register_f,
                                              'login_form': login_f})
+
+def quick_track(request, selected_date=None):
+    if selected_date is None:
+        selected = get_user_date(request.user, selected_date).date()
+    else:
+        selected = get_user_date(request.user).date()
+    if request.method == 'POST':
+        f = QuickTrackForm(request.POST)
+        if f.is_valid():
+            t = f.save(commit=False)
+            t.track_date = selected
+            t.user = request.user
+            t.save()
+            messages.success(
+                request,
+                'Added {} hours to project "{}" at {}'.format(
+                    t.hours,
+                    t.project.name,
+                    fdate(t.track_date)
+                ))
+            return redirect('dashboard')
+    else:
+        f = QuickTrackForm()
+    return render(request, 'quick_track.html', {
+        'selected_date': selected, 'form': f})

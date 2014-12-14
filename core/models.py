@@ -15,6 +15,9 @@ class Project(models.Model):
     created_at = models.DateTimeField(auto_now_add=True, null=True)
     color = models.CharField(null=True, choices=COLOR_CHOICES, max_length=7)
 
+    def __unicode__(self):
+        return self.name
+
 class TrackedTime(models.Model):
     user = models.ForeignKey(User)
     project = models.ForeignKey(Project)
