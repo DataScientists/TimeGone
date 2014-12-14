@@ -5,6 +5,7 @@ from timezone_field import TimeZoneField
 
 
 class Project(models.Model):
+    # from http://ios7colors.com
     COLOR_CHOICES = [(x, x) for x in ['#FF9500', '#FF3B30', 
                                   '#4CD964', '#FFCC00', '#BDBEC2', '#1F1F21',
                                   '#FF2D55', '#5856D6', '#007AFF', '#34AADC']]

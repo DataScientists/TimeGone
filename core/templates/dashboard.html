@@ -4,17 +4,38 @@
   <div class="col-xs-12">
     <select id="dates">
       {% for x in dates %}
-      <option value="{{ x.0 }}" {% ifequal selected_date x.0 %}selected=selected{% endifequal %}>{{ x.1 }}</option>
+      <option value="{{ x }}" 
+	      {% ifequal selected_date x %}selected=selected{% endifequal %}>
+	{% ifequal x today_date %}TODAY{% else %}{{ x }}{% endifequal %}
+      </option>
       {% endfor %}
     </select>
     <br>
     <br>
-    <canvas id="graph" width="180" height="360" 
-	    style="border: 1px silver solid; padding: 3px;">
-    </canvas>    
+    <div class="flip-container" ontouchstart="this.classList.toggle('hover');">
+      <div class="flipper">
+	<div class="front">
+	  <!-- front content -->
+	  <canvas id="graph" width="180" height="360" 
+		  style="border: 1px silver solid; padding: 3px;">
+	  </canvas>    
+	</div>
+	<div class="back">
+	  <!-- back content -->
+	  <canvas id="legend" width="180" height="360" 
+		  style="border: 1px silver solid; padding: 3px;">
+	  </canvas>
+	</div>
+      </div>
+    </div>
   </div>
 </div>
 {% endblock %}
+
+{% block css %}
+<link rel="stylesheet" href="{{ STATIC_URL }}css/dashboard.css">
+{% endblock %}
+
 {% block js %}
 <script type="text/javascript">
 window.graph = {{ graph|safe }}.g;

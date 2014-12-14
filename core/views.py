@@ -165,46 +165,43 @@ def track(request, _id):
         f = TrackTimeForm()
     return render(request, 'track.html', {'form': f, 'project': project})
 
+def get_graph(user, date):
+    return json.dumps({
+        'g': list(TrackedTime.objects
+                  .filter(user=user, track_date=date)
+                  .values('project', 'project__name', 'project__color')
+                  .annotate(hours=Sum('hours'))
+                  .order_by('project__name'))})
 
 @login_required
 def dashboard(request):
-    if 'date' in request.GET:
-        selected_date = str(request.GET['date'])
-    else:
-        selected_date = None
+    def fdate(x):
+        return formats.date_format(x, 'SHORT_DATE_FORMAT')
+
     if request.is_ajax():
-        a = get_user_date(request.user, selected_date)
+        selected = get_user_date(request.user, str(request.GET['date']))
+        response = HttpResponse(get_graph(request.user, selected.date()))
+        response['Content-Type'] = 'application/json'
+        return response
+    
+    today = get_user_date(request.user).date()
+    if 'date' in request.GET:
+        selected = get_user_date(request.user, str(request.GET['date'])).date()
     else:
-        if date is None:
-            a = get_user_date(request.user)
-        else:
-            a = get_user_date(request.user, selected_date)
-    adate = a.date() # datetime.date for today
-    today_date = formats.date_format(adate, 'SHORT_DATE_FORMAT')
-    if not selected_date:
-        selected_date = today_date
-    graph = json.dumps({
-        'g': list(TrackedTime.objects.filter(user=request.user,
-                                             track_date=adate)\
-                  .values('project', 'project__name')\
-                  .annotate(hours=Sum('hours'))\
-                  .order_by('project__name'))})
-    if request.is_ajax():        
-        return HttpResponse(graph)
-    else:    
-        qs = TrackedTime.objects.filter(user=request.user)\
-                                .distinct()\
-                                .values('track_date')\
-                                .order_by('-track_date')
-        dates = [x['track_date'] for x in qs]
-        if adate != dates[0]:
-            dates.insert(0, adate)
-        dates = [formats.date_format(x, 'SHORT_DATE_FORMAT') for x in dates]
-        dates = [(x, x if x != today_date else 'TODAY') for x in dates]
-        return render(request, 'dashboard.html', 
-                      {'graph': graph, 'dates': dates, 
-                       'selected_date': selected_date,
-                       'today_date': today_date})
+        selected = today
+    qs = TrackedTime.objects.filter(user=request.user)\
+                            .distinct()\
+                            .values('track_date')\
+                            .order_by('-track_date')
+    dates = [x['track_date'] for x in qs]
+    if today != dates[0]:
+        dates.insert(0, today)
+    dates = map(fdate, dates)
+    graph = get_graph(request.user, selected)
+    return render(request, 'dashboard.html', 
+                  {'graph': graph, 'dates': dates, 
+                   'selected_date': fdate(selected),
+                   'today_date': fdate(today)})
     
 
 @login_required
