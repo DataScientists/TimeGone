@@ -43,9 +43,11 @@ class LoginForm(forms.Form):
 class CreateProjectForm(forms.ModelForm):
     class Media:
         js = ('js/create_project_color.js',)
+
     class Meta:
         model = Project
         exclude = ('user',)
+
     color = forms.CharField(widget=forms.Select(
         choices=Project.COLOR_CHOICES))
 
@@ -69,6 +71,6 @@ class QuickTrackForm(forms.ModelForm):
     class Meta:
         model = TrackedTime
         exclude = ('user', 'created_at', 'manual_date', 'track_date')
+
     hours = forms.FloatField(widget=forms.NumberInput(
         attrs={'min': 0}))
-    

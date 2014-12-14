@@ -1,7 +1,7 @@
 from __future__ import division
 
 import json
-import time
+import logging
 
 from datetime import date
 
@@ -165,6 +165,7 @@ def track(request, _id):
         f = TrackTimeForm()
     return render(request, 'track.html', {'form': f, 'project': project})
 
+
 def get_graph(user, date):
     return json.dumps({
         'g': list(TrackedTime.objects
@@ -173,8 +174,10 @@ def get_graph(user, date):
                   .annotate(hours=Sum('hours'))
                   .order_by('project__name'))})
 
+
 def fdate(x):
     return formats.date_format(x, 'SHORT_DATE_FORMAT')
+
 
 @login_required
 def dashboard(request):
@@ -183,7 +186,7 @@ def dashboard(request):
         response = HttpResponse(get_graph(request.user, selected.date()))
         response['Content-Type'] = 'application/json'
         return response
-    
+
     today = get_user_date(request.user).date()
     if 'date' in request.GET:
         selected = get_user_date(request.user, str(request.GET['date'])).date()
@@ -198,11 +201,12 @@ def dashboard(request):
         dates.insert(0, today)
     dates = map(fdate, dates)
     graph = get_graph(request.user, selected)
-    return render(request, 'dashboard.html', 
-                  {'graph': graph, 'dates': dates, 
+    return render(request, 'dashboard.html',
+                  {'graph': graph, 'dates': dates,
                    'selected_date': fdate(selected),
                    'today_date': fdate(today)})
-    
+
+
 @login_required
 def projects(request):
     qs = Project.objects.filter(user=request.user)
@@ -277,6 +281,7 @@ def register(request):
         login_f = LoginForm()
     return render(request, 'register.html', {'register_form': register_f,
                                              'login_form': login_f})
+
 
 def quick_track(request, selected_date=None):
     if selected_date is None:

@@ -6,9 +6,10 @@ from timezone_field import TimeZoneField
 
 class Project(models.Model):
     # from http://ios7colors.com
-    COLOR_CHOICES = [(x, x) for x in ['#FF9500', '#FF3B30', 
-                                  '#4CD964', '#FFCC00', '#BDBEC2', '#1F1F21',
-                                  '#FF2D55', '#5856D6', '#007AFF', '#34AADC']]
+    COLOR_CHOICES = [(x, x)
+                     for x in ['#FF9500', '#FF3B30',
+                               '#4CD964', '#FFCC00', '#BDBEC2', '#1F1F21',
+                               '#FF2D55', '#5856D6', '#007AFF', '#34AADC']]
     user = models.ForeignKey(User, null=True)
     name = models.CharField(max_length=255)
     description = models.TextField()
@@ -17,6 +18,7 @@ class Project(models.Model):
 
     def __unicode__(self):
         return self.name
+
 
 class TrackedTime(models.Model):
     user = models.ForeignKey(User)
