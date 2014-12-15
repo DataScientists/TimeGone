@@ -48,8 +48,7 @@ class CreateProjectForm(forms.ModelForm):
         model = Project
         exclude = ('user',)
 
-    color = forms.CharField(widget=forms.Select(
-        choices=Project.COLOR_CHOICES))
+    color = forms.CharField()
 
 
 class TrackTimeForm(forms.ModelForm):

@@ -2,22 +2,27 @@
 
 {% load bootstrap_tags %}
 
+{% block css %}
+<link rel="stylesheet" href="{{ STATIC_URL}}css/modal-color.css">
+{% endblock %}
+
 {% block content %}
-      <div class="row">
-	<div class="col-xs-12">
-	  <form method="POST" action=".">
-	    <legend>Add Project</legend>
-	    {% csrf_token %}
-	    {{ form|as_bootstrap }}
-	    <div class="form-actions">
-	      <a href="{% url 'projects' %}" class="btn">
-		<span class="glyphicon glyphicon-arrow-left"></span>
-		Projects</a>
-	      <button type="submit" class="btn btn-primary">Submit</button>
-	    </div>
-	  </form>
-	</div>
+<div class="row">
+  <div class="col-xs-12">
+    <form method="POST" action=".">
+      <legend>Add Project</legend>
+      {% csrf_token %}
+      {{ form|as_bootstrap }}
+      <div class="form-actions">
+	<a href="{% url 'projects' %}" class="btn">
+	  <span class="glyphicon glyphicon-arrow-left"></span>
+	  Projects</a>
+	<button type="submit" class="btn btn-primary">Submit</button>
       </div>
+    </form>
+  </div>
+</div>
+{% include 'modals/color.html' %}
 {% endblock %}
 
 {% block js %}

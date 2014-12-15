@@ -6,15 +6,24 @@ from timezone_field import TimeZoneField
 
 class Project(models.Model):
     # from http://ios7colors.com
-    COLOR_CHOICES = [(x, x)
-                     for x in ['#FF9500', '#FF3B30',
-                               '#4CD964', '#FFCC00', '#BDBEC2', '#1F1F21',
-                               '#FF2D55', '#5856D6', '#007AFF', '#34AADC']]
+    COLOR_CHOICES = map(lambda x: (x, x),
+                        ['rgb(251, 0, 7)', 'rgb(240, 192, 193)',
+                         'rgb(163, 75, 10)', 'rgb(200, 176, 42)',
+                         'rgb(32, 246, 6)', 'rgb(24, 147, 11)',
+                         'rgb(36, 174, 255)', 'rgb(20, 158, 156)',
+                         'rgb(0, 0, 255)', 'rgb(240, 253, 57)',
+                         'rgb(144, 196, 35)', 'rgb(217, 0, 204)',
+                         'rgb(97, 0, 129)', 'rgb(200, 0, 93)',
+                         'rgb(212, 100, 240)', 'rgb(253, 134, 9)',
+                         'rgb(236, 40, 9)', 'rgb(253, 197, 11)',
+                         'rgb(239, 210, 118)', 'rgb(238, 154, 40)',
+                         'rgb(95, 254, 238)', 'rgb(194, 204, 223)',
+                         'rgb(89, 100, 104)', 'rgb(0, 0, 0)'])
     user = models.ForeignKey(User, null=True)
     name = models.CharField(max_length=255)
     description = models.TextField()
     created_at = models.DateTimeField(auto_now_add=True, null=True)
-    color = models.CharField(null=True, choices=COLOR_CHOICES, max_length=7)
+    color = models.CharField(null=True, choices=COLOR_CHOICES, max_length=18)
 
     def __unicode__(self):
         return self.name
