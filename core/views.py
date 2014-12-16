@@ -197,7 +197,7 @@ def dashboard(request):
                             .values('track_date')\
                             .order_by('-track_date')
     dates = [x['track_date'] for x in qs]
-    if today != dates[0]:
+    if len(dates) == 0 or today != dates[0]:
         dates.insert(0, today)
     dates = map(fdate, dates)
     graph = get_graph(request.user, selected)
