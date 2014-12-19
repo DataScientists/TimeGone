@@ -1,39 +1,48 @@
-  <head>
-    <meta charset="utf-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>TimeGone</title>
-
-    <!-- Bootstrap -->
-    <link rel="stylesheet" href="{{ STATIC_URL }}bootstrap/3.3.0/css/bootstrap.min.css">
-
-    <!-- HTML5 shim and Respond.js for IE8 support of HTML5 elements and media queries -->
-    <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
-    <!--[if lt IE 9]>
+{% load class_active %}
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>TimeGone</title>
+  
+  <!-- Bootstrap -->
+  <link rel="stylesheet" href="{{ STATIC_URL }}bootstrap/3.3.0/css/bootstrap.min.css">
+  
+  <!-- HTML5 shim and Respond.js for IE8 support of HTML5 elements and media queries -->
+  <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
+  <!--[if lt IE 9]>
       <script src="{{ STATIC_URL }}html5shiv/3.7.2/html5shiv.min.js"></script>
       <script src="{{ STATIC_URL }}respond/1.4.2/respond.min.js"></script>
-    <![endif]-->
-    <link rel="stylesheet" href="{{ STATIC_URL }}bootstrap/3.3.0/css/bootstrap-theme.min.css">
-    <style type="text/css">
-      .nobr	{ white-space:nowrap; }
-    </style>
-    <link rel="stylesheet" href="{{ STATIC_URL }}css/datepicker.css">
-    {% block css %}{% endblock %}
-  </head>
-  <body>
+      <![endif]-->
+  <link rel="stylesheet" href="{{ STATIC_URL }}bootstrap/3.3.0/css/bootstrap-theme.min.css">
+  <style type="text/css">
+    .nobr	{ white-space:nowrap; }
+  </style>
+  <link rel="stylesheet" href="{{ STATIC_URL }}css/datepicker.css">
+  {% block css %}{% endblock %}
+</head>
+<body>
 
     <div class="container">
 
     {% if user.is_authenticated %}
     <nav class="navbar navbar-default" role="navigation">
       <div class="container-fluid">
+        <div class="navbar-header">
+          <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar" aria-expanded="false" aria-controls="navbar">
+            <span class="sr-only">Toggle navigation</span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+          </button>
+          <a class="navbar-brand" href="{% url 'dashboard' %}">TimeGone</a>
+        </div>
 	<div id="navbar" class="navbar-collapse collapse">
 	  <ul class="nav navbar-nav">
-	    <li><a href="{% url 'dashboard' %}">Dashboard</a></li>
-	    <li><a href="{% url 'projects' %}">Projects</a></li>
+	    <li {% class_active 'projects' %}><a href="{% url 'projects' %}">Projects</a></li>
+            <li {% class_active 'settings' %}><a href="{% url 'settings' %}">{{user.username }}</a></li>
 	  </ul>
           <ul class="nav navbar-nav navbar-right">
-            <li><a href="{% url 'settings' %}">{{user.username }}</a></li>
             <li><a href="{% url 'logout' %}">Logout</a></li>
 	  </ul>
 	</div>
