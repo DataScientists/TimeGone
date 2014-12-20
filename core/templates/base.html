@@ -41,6 +41,7 @@
 	  <ul class="nav navbar-nav">
 	    <li {% class_active 'projects' %}><a href="{% url 'projects' %}">Projects</a></li>
             <li {% class_active 'settings' %}><a href="{% url 'settings' %}">{{user.username }}</a></li>
+            <li {% class_active 'report' %}><a href="{% url 'report' %}">Report</a></li>
 	  </ul>
           <ul class="nav navbar-nav navbar-right">
             <li><a href="{% url 'logout' %}">Logout</a></li>
@@ -67,7 +68,6 @@
     <script src="{{ STATIC_URL }}jquery/1.11.1/jquery.min.js"></script>
     <!-- Include all compiled plugins (below), or include individual files as needed -->
     <script src="{{ STATIC_URL }}bootstrap/3.3.0/js/bootstrap.min.js"></script>
-    <script src="{{ STATIC_URL }}js/bootstrap-datepicker.js"></script>
     {% block js %}{% endblock %}
   </body>
 </html>

@@ -74,6 +74,7 @@
 {% endblock %}
 
     {% block js %}
+    <script src="{{ STATIC_URL }}js/bootstrap-datepicker.js"></script>
     <script type="text/javascript">
       $(function(){
         $('.datepicker').datepicker({
@@ -82,8 +83,9 @@
         }).on('changeDate', function(e){
           var d = e.date;
           var s = d.getFullYear() + '-' + (d.getMonth() + 1) + '-' + d.getDate();
-          window.location = '/report/' + s + '/';
+          window.location.search = 'd=' + s;
         });
       });
     </script>
     {% endblock %}
+

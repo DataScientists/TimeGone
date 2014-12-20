@@ -66,11 +66,16 @@ def settings(request):
 
 
 @login_required
-def report(request, year, month, day):
-    year = int(year)
-    month = int(month)
-    day = int(day)
-    x_day = date(year, month, day)
+def report(request):
+    if 'd' in request.GET:
+        year, month, day = map(int, request.GET['d'].split('-'))
+        x_day = date(year, month, day)
+    else:
+        a = get_user_date(request.user)
+        year = a.year
+        month = a.month
+        day = a.day
+        x_day = a.date()
 
     qs = TrackedTime.objects.filter(
         user=request.user,
@@ -210,12 +215,7 @@ def dashboard(request):
 @login_required
 def projects(request):
     qs = Project.objects.filter(user=request.user)
-    a = get_user_date(request.user)
-    report_date = {'day': a.day,
-                   'month': a.month,
-                   'year': a.year}
-    return render(request, 'projects.html',
-                  {'objects': qs, 'report_date': report_date})
+    return render(request, 'projects.html', {'objects': qs})
 
 
 @login_required
