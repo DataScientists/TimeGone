@@ -67,3 +67,8 @@
     -moz-transform: rotateY(180deg);
     transform: rotateY(180deg);
 }
+#bigtime {
+    padding-top: 6px;
+    margin-top: 6px;
+    margin-left: 10px;
+}

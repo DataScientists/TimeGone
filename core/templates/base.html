@@ -19,7 +19,9 @@
     .nobr	{ white-space:nowrap; }
   </style>
   <link rel="stylesheet" href="{{ STATIC_URL }}css/datepicker.css">
-  {% block css %}{% endblock %}
+  {% block css %}
+<link rel="stylesheet" href="{{ STATIC_URL }}css/dashboard.css">
+    {% endblock %}
 </head>
 <body>
 
@@ -37,7 +39,7 @@
           </button>
 <a href="{% url 'quick_track' %}"
        class="btn btn-primary"
-       id="bigtime">BIG TIME</a>
+       id="bigtime">Big Time</a>
         </div>
 	<div id="navbar" class="navbar-collapse collapse">
 	  <ul class="nav navbar-nav">

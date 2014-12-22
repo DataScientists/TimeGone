@@ -33,10 +33,6 @@
 </div>
 {% endblock %}
 
-{% block css %}
-<link rel="stylesheet" href="{{ STATIC_URL }}css/dashboard.css">
-{% endblock %}
-
 {% block js %}
 <script type="text/javascript">
 window.graph = {{ graph|safe }}.g;
