@@ -23,3 +23,14 @@ COLORS = {'#0000FF': 'ca',
           '#C2CCDF': 'fb',
           '#596468': 'fc',
           '#000000': 'fd'}
+
+
+def abbr2color(x):
+    for k, v in COLORS.items():
+        if v == x:
+            return k
+    return DEFAULT_COLOR
+
+
+def color2abbr(x):
+    return COLORS.get(x, "")

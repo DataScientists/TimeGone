@@ -1,5 +1,4 @@
 (function(React){
-
   var Color = React.createClass({displayName: 'Color',
     mbchFactory: function(){
       var self = this;
@@ -8,18 +7,8 @@
 	var $m = $('#modal-color');
 	$('button', $m).unbind('click', modalButtonClickHandler);
 	$m.modal('hide');
-
-	var c = e.target.className.split(" ")[1];
-	if (self.props.data.url){
-	  $.post(self.props.data.url, {attr: 'color', abbrev: c}).success(
-	    function(){
-	      self.setState({abbrev: c});		    
-	    }
-	  );
-	} else {
-
-	  self.setState({abbrev: c});
-	}
+	var color = e.target.className.split(" ")[1];
+	self.setState({abbrev: color});		    
       }
       return modalButtonClickHandler;
     },
@@ -30,12 +19,19 @@
       $m.modal('show');
     },
     getInitialState: function(){
-      return {abbrev: this.props.data.abbrev};
+      if (this.props.data.abbrev){
+	return {abbrev: this.props.data.abbrev};
+      } else {
+	return {abbrev: ''};
+      }
     },
     render: function(){
       var classes = 'color-selection ' + this.state.abbrev;
       return (
-	  React.createElement("button", {className: classes, onClick: this.handleClick})
+	  React.createElement("div", null, 
+	  React.createElement("button", {className: classes, onClick: this.handleClick}), 
+	  React.createElement("input", {type: "hidden", name: "color", value: this.state.abbrev})
+	  )
       )
     }
   });
@@ -43,3 +39,13 @@
   var x = document.querySelector('.editable-color');
   React.render(React.createElement(Color, {data: x.dataset}), x);
 })(React);
+
+jQuery(function($){
+  var $f = $('form');
+  $f.submit(function(e){
+    if (!$('[name=color]', $f).val()){
+      e.preventDefault();
+      modal_alert('Choose color', 'Project must have some color assigned to it. It can not stay white.');
+    }
+  });
+});

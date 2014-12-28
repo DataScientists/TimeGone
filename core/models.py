@@ -3,22 +3,12 @@ from django.contrib.auth.models import User
 from django.core.validators import MinValueValidator
 from timezone_field import TimeZoneField
 
+from constants import COLORS
+
 
 class Project(models.Model):
     # from http://ios7colors.com
-    COLOR_CHOICES = map(lambda x: (x, x),
-                        ['rgb(251, 0, 7)', 'rgb(240, 192, 193)',
-                         'rgb(163, 75, 10)', 'rgb(200, 176, 42)',
-                         'rgb(32, 246, 6)', 'rgb(24, 147, 11)',
-                         'rgb(36, 174, 255)', 'rgb(20, 158, 156)',
-                         'rgb(0, 0, 255)', 'rgb(240, 253, 57)',
-                         'rgb(144, 196, 35)', 'rgb(217, 0, 204)',
-                         'rgb(97, 0, 129)', 'rgb(200, 0, 93)',
-                         'rgb(212, 100, 240)', 'rgb(253, 134, 9)',
-                         'rgb(236, 40, 9)', 'rgb(253, 197, 11)',
-                         'rgb(239, 210, 118)', 'rgb(238, 154, 40)',
-                         'rgb(95, 254, 238)', 'rgb(194, 204, 223)',
-                         'rgb(89, 100, 104)', 'rgb(0, 0, 0)'])
+    COLOR_CHOICES = map(lambda x: (x, x), COLORS.keys())
     user = models.ForeignKey(User, null=True)
     name = models.CharField(max_length=255)
     description = models.TextField()

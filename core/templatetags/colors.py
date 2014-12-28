@@ -1,5 +1,5 @@
 from django import template
-from core.constants import COLORS
+from core.constants import color2abbr
 
 
 register = template.Library()
@@ -7,4 +7,4 @@ register = template.Library()
 
 @register.filter
 def color_abbrev(c):
-    return COLORS.get(c, "")
+    return color2abbr(c)

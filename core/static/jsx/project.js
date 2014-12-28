@@ -28,7 +28,6 @@
     },
     handleBlur: function(e){
       e.preventDefault();
-      console.log('blurring', this.state.initial_text);
       this.props.handle(false, this.state.initial_text);
     },
     handleChange: function(e){

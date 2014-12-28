@@ -19,7 +19,7 @@ from django.shortcuts import render, redirect, get_object_or_404
 from django.utils import formats
 from django.views.decorators.csrf import csrf_protect
 
-from constants import COLORS, DEFAULT_COLOR
+from constants import abbr2color
 from forms import (
     RegisterForm, CreateProjectForm, LoginForm, TrackTimeForm,
     PasswordForm, TimezoneForm, QuickTrackForm)
@@ -224,14 +224,7 @@ def project(request, project_id):
             p.save()
             return HttpResponse("")
         elif a == 'color':
-            found = None
-            for k, v in COLORS.items():
-                if v == request.POST['abbrev']:
-                    found = k
-                    break
-            if found is None:
-                found = DEFAULT_COLOR
-            p.color = found
+            p.color = abbr2color(request.POST['abbrev']);
             p.save()
             return HttpResponse("")
         else:
