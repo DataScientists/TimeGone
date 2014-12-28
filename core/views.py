@@ -224,7 +224,7 @@ def project(request, project_id):
             p.save()
             return HttpResponse("")
         elif a == 'color':
-            p.color = abbr2color(request.POST['abbrev']);
+            p.color = abbr2color(request.POST['abbrev'])
             p.save()
             return HttpResponse("")
         else:
@@ -327,5 +327,6 @@ def quick_track(request, selected_date=None):
             return redirect('dashboard')
     else:
         f = QuickTrackForm()
+    f.fields['project'].queryset = Project.objects.filter(user=request.user)
     return render(request, 'quick_track.html', {
         'selected_date': selected, 'form': f})
