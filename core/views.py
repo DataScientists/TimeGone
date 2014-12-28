@@ -10,14 +10,15 @@ import arrow
 from django.contrib.auth import authenticate, login
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import User
-from django.views.decorators.csrf import csrf_exempt
+from django.views.decorators.csrf import (
+    csrf_exempt, csrf_protect)
+from django.views.decorators.http import require_http_methods
 from django.contrib import messages
 from django.db.models import Sum
 from django.db.utils import IntegrityError
 from django.http import HttpResponse, HttpResponseForbidden
 from django.shortcuts import render, redirect, get_object_or_404
 from django.utils import formats
-from django.views.decorators.csrf import csrf_protect
 
 from constants import abbr2color
 from forms import (
@@ -66,61 +67,69 @@ def settings(request):
                                              'tz_form': tf})
 
 
+def parse_date(request, k):
+    year, month, day = map(int, request.GET[k].split('-'))
+    return date(year, month, day)
+
+
 @login_required
 def report(request):
-    if 'd' in request.GET:
-        year, month, day = map(int, request.GET['d'].split('-'))
-        x_day = date(year, month, day)
+    if 'start' in request.GET and 'end' in request.GET:
+        start = parse_date(request, 'start')
+        end = parse_date(request, 'end')
     else:
         a = get_user_date(request.user)
-        year = a.year
-        month = a.month
-        day = a.day
-        x_day = a.date()
+        start = a.date()
+        end = start + timedelta(days=1)
 
     qs = TrackedTime.objects.filter(
         user=request.user,
-        track_date=x_day).order_by('id')
-
-    current_color = 0
-    result = {}
-    detailed = {}
-    total_hours = 0
-    for x in qs:
-        if x.project.id not in result:
-            result[x.project.id] = {
-                'color': current_color,
-                'name': x.project.name,
-                'hours': 0
-            }
-            current_color += 1
-        result[x.project.id]['hours'] += x.hours
-        total_hours += x.hours
-        detailed.setdefault(x.project.id, {'project': x.project,
-                                           'timeset': []})
-        detailed[x.project.id]['timeset'].append((x.hours, x.activity))
-    detailed = [(v['project'], v['timeset']) for k, v in detailed.items()]
-    color_classes = (
-        ('progress-bar-primary', 'text-primary'),
-        ('progress-bar-success', 'text-success'),
-        ('progress-bar-info', 'text-info'),
-        ('progress-bar-warning', 'text-warning'),
-        ('progress-bar-danger', 'text-danger')
-    )
-    assert current_color <= len(color_classes), \
-        "Too much projects to build progress bar"
-    report = [{'id': k,
-               'color_class': color_classes[v['color']][0],
-               'legend_class': color_classes[v['color']][1],
-               'name': v['name'], 'hours': v['hours'],
-               'percent': v['hours'] / total_hours * 100}
-              for k, v
-              in result.items()]
-    report.sort(key=lambda x: x['name'])
-    return render(request, 'report.html',
-                  {'year': year, 'month': month, 'day': day,
-                   'report': report,
-                   'detailed': detailed})
+        track_date__gte=start,
+        track_date__lte=end).order_by('id')
+    return render(request, "report.html", {
+        'start': fdate(start),
+        'end': fdate(end),
+        'tracked_time': qs,
+        'next': request.get_full_path()})
+    # current_color = 0
+    # result = {}
+    # detailed = {}
+    # total_hours = 0
+    # for x in qs:
+    #     if x.project.id not in result:
+    #         result[x.project.id] = {
+    #             'color': current_color,
+    #             'name': x.project.name,
+    #             'hours': 0
+    #         }
+    #         current_color += 1
+    #     result[x.project.id]['hours'] += x.hours
+    #     total_hours += x.hours
+    #     detailed.setdefault(x.project.id, {'project': x.project,
+    #                                        'timeset': []})
+    #     detailed[x.project.id]['timeset'].append((x.hours, x.activity))
+    # detailed = [(v['project'], v['timeset']) for k, v in detailed.items()]
+    # color_classes = (
+    #     ('progress-bar-primary', 'text-primary'),
+    #     ('progress-bar-success', 'text-success'),
+    #     ('progress-bar-info', 'text-info'),
+    #     ('progress-bar-warning', 'text-warning'),
+    #     ('progress-bar-danger', 'text-danger')
+    # )
+    # assert current_color <= len(color_classes), \
+    #     "Too much projects to build progress bar"
+    # report = [{'id': k,
+    #            'color_class': color_classes[v['color']][0],
+    #            'legend_class': color_classes[v['color']][1],
+    #            'name': v['name'], 'hours': v['hours'],
+    #            'percent': v['hours'] / total_hours * 100}
+    #           for k, v
+    #           in result.items()]
+    # report.sort(key=lambda x: x['name'])
+    # return render(request, 'report.html',
+    #               {'year': year, 'month': month, 'day': day,
+    #                'report': report,
+    #                'detailed': detailed})
 
 
 def get_user_date(user, d=None):
@@ -334,3 +343,13 @@ def quick_track(request, selected_date=None):
     f.fields['project'].queryset = Project.objects.filter(user=request.user)
     return render(request, 'quick_track.html', {
         'selected_date': selected, 'form': f})
+
+
+@require_http_methods(['POST'])
+@login_required
+def delete_tracked_time(request, obj_id):
+    x = get_object_or_404(
+        TrackedTime.objects.filter(user=request.user),
+        id=obj_id)
+    x.delete()
+    return redirect(request.POST['next'])
