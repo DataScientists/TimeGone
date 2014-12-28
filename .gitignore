@@ -1,5 +1,6 @@
 syntax: glob
 
+.module-cache
 .DS_Store
 *.pyc
 *~

@@ -1,0 +1,48 @@
+{% extends "base.html" %}
+
+{% load bootstrap_tags %}
+{% load colors %}
+
+{% block css %}
+<link rel="stylesheet" href="{{ STATIC_URL}}css/modal-color.css">
+{% endblock %}
+
+{% block content %}
+<div class="row">
+  <div class="col-xs-6">
+    <table class="table">
+      <tbody>
+	<tr>
+	  <th>Name:</th>
+	  <td class="click-editable" 
+	      data-attr="name" 
+	      data-url="{% url 'project' project.id %}">{{ project.name }}</td>
+	</tr>
+	<tr>
+	  <th>Description:</th>
+	  <td class="click-editable" 
+	      data-attr="description" 
+	      data-url="{% url 'project' project.id %}">{{ project.description }}</td>
+	</tr>
+	<tr>
+	  <th>Color</th>
+	  <td><span class="editable-color"
+	      data-attr="color"
+	      data-url="{% url 'project' project.id %}"
+	      data-color="{{ project.color }}"
+	      data-abbrev="{{ project.color|color_abbrev }}"></span></td>
+	</tr>
+      </tbody>
+    </table>
+  </div>
+</div>
+{% include 'modals/color.html' %}
+{% endblock %}
+
+{% block js %}
+<script type="text/javascript" src="{{ STATIC_URL }}vendors/fb/react-0.12.2.js"></script>
+<script type="text/javascript" src="{{ STATIC_URL }}js/project.js"></script>
+<script type="text/javascript" src="{{ STATIC_URL }}js/color-selector.js"></script>
+{% endblock %}
+
+

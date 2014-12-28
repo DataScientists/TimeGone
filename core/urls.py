@@ -7,6 +7,7 @@ urlpatterns = patterns(
     '',
     url(r'^$', views.dashboard, name='dashboard'),
     url(r'^projects/$', views.projects, name='projects'),
+    url(r'^projects/(\d+)/$', views.project, name='project'),
     url(r'^add/$', views.add, name='add'),
     url(r'^settings/$', views.settings, name='settings'),
     url(r'^report/$', views.report, name='report'),

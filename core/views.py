@@ -10,15 +10,16 @@ import arrow
 from django.contrib.auth import authenticate, login
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import User
+from django.views.decorators.csrf import csrf_exempt
 from django.contrib import messages
 from django.db.models import Sum
 from django.db.utils import IntegrityError
-from django.http import HttpResponse
+from django.http import HttpResponse, HttpResponseForbidden
 from django.shortcuts import render, redirect, get_object_or_404
 from django.utils import formats
 from django.views.decorators.csrf import csrf_protect
 
-
+from constants import COLORS, DEFAULT_COLOR
 from forms import (
     RegisterForm, CreateProjectForm, LoginForm, TrackTimeForm,
     PasswordForm, TimezoneForm, QuickTrackForm)
@@ -210,6 +211,34 @@ def dashboard(request):
                   {'graph': graph, 'dates': dates,
                    'selected_date': fdate(selected),
                    'today_date': fdate(today)})
+
+
+@login_required
+@csrf_exempt
+def project(request, project_id):
+    p = get_object_or_404(Project, user=request.user, id=project_id)
+    if request.method == 'POST':
+        a = request.POST['attr']
+        if a in ['name', 'description']:
+            setattr(p, a, request.POST['text'])
+            p.save()
+            return HttpResponse("")
+        elif a == 'color':
+            found = None
+            for k, v in COLORS.items():
+                if v == request.POST['abbrev']:
+                    found = k
+                    break
+            if found is None:
+                found = DEFAULT_COLOR
+            p.color = found
+            p.save()
+            return HttpResponse("")
+        else:
+            return HttpResponseForbidden()
+
+    return render(request, 'project.html', {
+        'project': p})
 
 
 @login_required

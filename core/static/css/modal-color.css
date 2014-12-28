@@ -1,84 +1,78 @@
-.color-selection td {
-    /* height: 56px; */
-    /* width: 48px; */
-    /* margin: 20px; */
-    /* padding: 20px; */
-}
-.color-selection td button {
+button.color-selection {
     height: 56px;
     width: 48px;
     margin: 10px;
 }
 
-.color-selection td.aa button {
-    background-color: rgb(251, 0, 7);
+button.color-selection.aa {
+    background-color: #FB0007;
 }
-.color-selection td.ab  button {
-    background-color: rgb(240, 192, 193);
+button.color-selection.ab {
+    background-color: #F0C0C1;
 }
-.color-selection td.ac button  {
-    background-color: rgb(163, 75, 10);
+button.color-selection.ac {
+    background-color: #A34B0A;
 }
-.color-selection td.ad button  {
-    background-color: rgb(200, 176, 42);
+button.color-selection.ad {
+    background-color: #C8B02A;
 }
-.color-selection td.ba button  {
-    background-color: rgb(32, 246, 6);
+button.color-selection.ba {
+    background-color: #20F606;
 }
-.color-selection td.bb  button {
-    background-color: rgb(24, 147, 11);
+button.color-selection.bb {
+    background-color: #18930B;
 }
-.color-selection td.bc button  {
-    background-color: rgb(36, 174, 255);
+button.color-selection.bc {
+    background-color: #24AEFF;
 }
-.color-selection td.bd button  {
-    background-color: rgb(20, 158, 156);
+button.color-selection.bd {
+    background-color: #149E9C;
 }
-.color-selection td.ca  button {
-    background-color: rgb(0, 0, 255);
+button.color-selection.ca {
+    background-color: #0000FF;
 }
-.color-selection td.cb button  {
-    background-color: rgb(240, 253, 57);
+button.color-selection.cb {
+    background-color: #F0FD39;
 }
-.color-selection td.cc  button {
-    background-color: rgb(144, 196, 35);
+button.color-selection.cc {
+    background-color: #90C423;
 }
-.color-selection td.cd  button {
-    background-color: rgb(217, 0, 204);
+button.color-selection.cd {
+    background-color: #D900CC;
 }
-.color-selection td.da  button {
-    background-color: rgb(97, 0, 129);
+button.color-selection.da {
+    background-color: #610081;
 }
-.color-selection td.db button  {
-    background-color: rgb(200, 0, 93);
+button.color-selection.db {
+    background-color: #C8005D;
 }
-.color-selection td.dc  button {
-    background-color: rgb(212, 100, 240);
+button.color-selection.dc {
+    background-color: #D464F0;
 }
-.color-selection td.dd  button {
-    background-color: rgb(253, 134, 9);
+button.color-selection.dd {
+    background-color: #FD8609;
 }
-.color-selection td.ea  button {
-    background-color: rgb(236, 40, 9);
+button.color-selection.ea {
+    background-color: #EC2809;
 }
-.color-selection td.eb button  {
-    background-color: rgb(253, 197, 11);
+button.color-selection.eb {
+    background-color: #FDC50B;
 }
-.color-selection td.ec  button {
-    background-color: rgb(239, 210, 118);
+button.color-selection.ec {
+    background-color: #EFD276;
 }
-.color-selection td.ed  button {
-    background-color: rgb(238, 154, 40);
+button.color-selection.ed {
+    background-color: #EE9A28;
 }
-.color-selection td.fa  button {
-    background-color: rgb(95, 254, 238);
+button.color-selection.fa {
+    background-color: #5FFEEE;
 }
-.color-selection td.fb  button {
-    background-color: rgb(194, 204, 223);
+button.color-selection.fb {
+    background-color: #C2CCDF;
 }
-.color-selection td.fc button  {
-    background-color: rgb(89, 100, 104);
+button.color-selection.fc {
+    background-color: #596468;
 }
-.color-selection td.fd button  {
-    background-color: rgb(0, 0, 0);
+button.color-selection.fd {
+    background-color: #000000;
 }

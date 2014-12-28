@@ -20,7 +20,12 @@
       </div>
 {% endblock %}
 
+{% block css %}
+  <link rel="stylesheet" href="{{ STATIC_URL }}vendors/bootstrap-datepicker/datepicker.css">
+{% endblock %}
+
 {% block js %}
+    <script src="{{ STATIC_URL }}vendors/bootstrap-datepicker/bootstrap-datepicker.js"></script>
       <script type="text/javascript">
 	$(function(){
           $('.datepicker').datepicker({
