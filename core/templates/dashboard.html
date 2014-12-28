@@ -2,13 +2,19 @@
 {% block content %}
 <div class="row">
   <div class="col-xs-12">
-
+      <a href="{% url 'quick_track' %}" class="btn btn-primary" id="bigtime">Big Time</a>
     <select id="dates">
       {% for x in dates %}
       <option value="{{ x }}" 
-	      {% ifequal selected_date x %}selected=selected{% endifequal %}>
-	{% ifequal x today_date %}TODAY{% else %}{{ x }}{% endifequal %}
-      </option>
+	      {% ifequal selected_date x %}selected=selected{% endifequal %}>{% spaceless %}
+	{% if x == today_date %}
+        TODAY
+        {% elif x == yesterday_date %}
+        YESTERDAY
+        {% else %}
+        {{ x }}
+        {% endif %}
+      {% endspaceless %}</option>
       {% endfor %}
     </select>
     <br>

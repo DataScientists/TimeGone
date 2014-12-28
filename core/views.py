@@ -3,7 +3,7 @@ from __future__ import division
 import json
 import logging
 
-from datetime import date
+from datetime import date, timedelta
 
 import arrow
 
@@ -205,12 +205,16 @@ def dashboard(request):
     dates = [x['track_date'] for x in qs]
     if len(dates) == 0 or today != dates[0]:
         dates.insert(0, today)
+    yesterday = today - timedelta(days=1)
+    if dates[1] != yesterday:
+        dates.insert(1, yesterday)
     dates = map(fdate, dates)
     graph = get_graph(request.user, selected)
     return render(request, 'dashboard.html',
                   {'graph': graph, 'dates': dates,
                    'selected_date': fdate(selected),
-                   'today_date': fdate(today)})
+                   'today_date': fdate(today),
+                   'yesterday_date': fdate(yesterday)})
 
 
 @login_required
