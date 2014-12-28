@@ -2,9 +2,7 @@
 {% block content %}
 <div class="row">
   <div class="col-xs-12">
-    <a href="{% url 'quick_track' %}" 
-       class="btn btn-primary"
-       id="bigtime">BIG TIME</a>
+
     <select id="dates">
       {% for x in dates %}
       <option value="{{ x }}" 
@@ -33,10 +31,6 @@
     </div>
   </div>
 </div>
-{% endblock %}
-
-{% block css %}
-<link rel="stylesheet" href="{{ STATIC_URL }}css/dashboard.css">
 {% endblock %}
 
 {% block js %}
