@@ -10,6 +10,7 @@ import arrow
 from django.contrib.auth import authenticate, login
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import User
+from django.core.urlresolvers import reverse
 from django.views.decorators.csrf import (
     csrf_exempt, csrf_protect)
 from django.views.decorators.http import require_http_methods
@@ -22,7 +23,7 @@ from django.utils import formats
 
 from constants import abbr2color
 from forms import (
-    RegisterForm, CreateProjectForm, LoginForm, TrackTimeForm,
+    RegisterForm, LoginForm, TrackTimeForm,
     PasswordForm, TimezoneForm, QuickTrackForm)
 from models import Project, TrackedTime, Timezone
 
@@ -253,20 +254,6 @@ def projects(request):
     return render(request, 'projects.html', {'objects': qs})
 
 
-@login_required
-def add(request):
-    if request.method == 'POST':
-        f = CreateProjectForm(request.POST)
-        if f.is_valid():
-            p = f.save(commit=False)
-            p.user = request.user
-            p.save()
-            return redirect('projects')
-    else:
-        f = CreateProjectForm()
-    return render(request, 'add.html', {'form': f})
-
-
 @csrf_protect
 def register(request):
     if request.method == 'POST':
@@ -353,3 +340,13 @@ def delete_tracked_time(request, obj_id):
         id=obj_id)
     x.delete()
     return redirect(request.POST['next'])
+
+
+@require_http_methods(['POST'])
+@login_required
+@csrf_exempt
+def create(request):
+    p = Project.objects.create(name=request.POST['name'],
+                               description=request.POST['description'],
+                               user=request.user)
+    return HttpResponse(reverse('project', args=(p.id,)))
