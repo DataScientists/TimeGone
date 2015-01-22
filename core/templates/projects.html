@@ -4,8 +4,8 @@
 	<div class="col-xs-12">
 	  <table class="table condensed">
 	    <caption>
-	      <a class="btn active btn-primary" role="button"
-		 href="{% url "add" %}">
+	      <a class="btn active btn-primary add-project" role="button"
+		 href="#">
 		<span class="glyphicon glyphicon-plus" aria-hidden="true"></span>
 		Add
 	      </a>
@@ -28,4 +28,16 @@
 	  </table>
 	</div>
       </div>
+{% endblock %}
+
+{% block css %}
+<style type="text/css">
+table.new-project-incomplete, table.new-project-incomplete tr, table.new-project-incomplete tr td {
+background-color: yellow;
+}
+</style>
+{% endblock %}
+
+{% block js %}
+<script type="text/javascript" src="{{ STATIC_URL }}js/projects.js"></script>
 {% endblock %}

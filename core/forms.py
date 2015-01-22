@@ -42,37 +42,6 @@ class LoginForm(forms.Form):
     password = forms.CharField(widget=forms.PasswordInput)
 
 
-from django.utils.safestring import mark_safe
-class ColorButtonWidget(forms.Widget):
-    def render(self, name, value, attrs=None):
-        if value:
-            return mark_safe('<span class="editable-color" data-abbrev="' 
-                             + color2abbr(value) + '"></span>')
-        else:
-            return mark_safe('<span class="editable-color"></span>')
-
-
-
-class CreateProjectForm(forms.ModelForm):
-    class Media:
-        js = ('js/add-color-selector.js',)
-
-    class Meta:
-        model = Project
-        exclude = ('user',)
-
-    color = forms.CharField(widget=ColorButtonWidget())
-
-    def _clean_fields(self):
-        x = 'color'
-        if x in self.data:
-            orig = self.data._mutable 
-            self.data._mutable = True
-            self.data[x] = abbr2color(self.data[x])
-            self.data._mutable = orig
-        return super(CreateProjectForm, self)._clean_fields()
-
-
 class TrackTimeForm(forms.ModelForm):
     class Meta:
         model = TrackedTime
