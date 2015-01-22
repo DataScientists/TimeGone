@@ -1,4 +1,5 @@
 {% extends "base.html" %}
+{% load colors %}
 {% block content %}
       <div class="row">
 	<div class="col-xs-12">
@@ -22,12 +23,18 @@
 	      <tr>
 		<td class="nobr"><a href="{% url 'project' x.id %}">{{ x.name }}</a></td>
 		<td>{{ x.description }}</td>
+		<td><span class="editable-color"
+	      data-attr="color"
+	      data-url="{% url 'project' x.id %}"
+	      data-color="{{ x.color }}"
+	      data-abbrev="{{ x.color|color_abbrev }}"></span></td>
 	      </tr>
 	      {% endfor %}
 	    </tbody>
 	  </table>
 	</div>
       </div>
+{% include 'modals/color.html' %}
 {% endblock %}
 
 {% block css %}
@@ -40,4 +47,7 @@ background-color: yellow;
 
 {% block js %}
 <script type="text/javascript" src="{{ STATIC_URL }}js/projects.js"></script>
+<script type="text/javascript" src="{{ STATIC_URL }}js/project.js"></script>
+<script type="text/javascript" src="{{ STATIC_URL }}js/color-selector.js"></script>
+
 {% endblock %}
