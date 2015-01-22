@@ -207,16 +207,25 @@ def dashboard(request):
         selected = get_user_date(request.user, str(request.GET['date'])).date()
     else:
         selected = today
-    qs = TrackedTime.objects.filter(user=request.user)\
-                            .distinct()\
-                            .values('track_date')\
-                            .order_by('-track_date')
-    dates = [x['track_date'] for x in qs]
-    if len(dates) == 0 or today != dates[0]:
-        dates.insert(0, today)
+    # qs = TrackedTime.objects.filter(user=request.user)\
+    #                         .distinct()\
+    #                         .values('track_date')\
+    #                         .order_by('-track_date')
+    # dates = [x['track_date'] for x in qs]
+    # if len(dates) == 0 or today != dates[0]:
+    #     dates.insert(0, today)
+    # yesterday = today - timedelta(days=1)
+    # if dates[1] != yesterday:
+    #     dates.insert(1, yesterday)
+
+    dates = [];
+    dates.insert(0, today)
     yesterday = today - timedelta(days=1)
-    if dates[1] != yesterday:
-        dates.insert(1, yesterday)
+    dates.insert(1, yesterday)
+    for i in range(2,7):
+        last_seven = today - timedelta(days=i)
+        dates.insert(i, last_seven)
+
     dates = map(fdate, dates)
     graph = get_graph(request.user, selected)
     return render(request, 'dashboard.html',

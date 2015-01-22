@@ -8,9 +8,9 @@
       <option value="{{ x }}" 
 	      {% ifequal selected_date x %}selected=selected{% endifequal %}>{% spaceless %}
 	{% if x == today_date %}
-        TODAY
+        Today
         {% elif x == yesterday_date %}
-        YESTERDAY
+        Yesterday
         {% else %}
         {{ x }}
         {% endif %}
