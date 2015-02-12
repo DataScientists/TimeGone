@@ -5,7 +5,7 @@
 {% block content %}
       <div class="row">
 	<div class="col-xs-12">
-	  <form method="POST" action="." class="form-horizontal" role="form">
+	  <form method="POST" action="." class="form-horizontal" role="form" id="quick-track-form">
 	    <legend>Track Time for {{ project.name }}</legend>
 	    {% csrf_token %}
 	    {{ form|as_bootstrap_horizontal }}
@@ -19,4 +19,139 @@
 	</div>
       </div>
 
+{% endblock %}
+
+{% block css %}
+<style type="text/css">
+.top {
+opacity: 0.4;
+}
+.top.selected {
+opacity: 1;
+border: 1px silver solid;
+}
+
+table.selected {
+border: 1px silver solid;
+}
+
+.wrapper { 
+        background:#EFEFEF; 
+        box-shadow: 1px 1px 10px #999; 
+        margin: auto; 
+        text-align: center; 
+        position: relative;
+        -webkit-border-radius: 5px;
+        -moz-border-radius: 5px;
+        border-radius: 5px;
+        margin-bottom: 20px !important;
+        width: 300px;
+        padding-top: 5px;
+    }
+    .scrolls { 
+        overflow-x: scroll;
+        overflow-y: hidden;
+        height: 125px;
+    white-space:nowrap
+    } 
+table.quicktrack-project.selected td{
+font-weight: bold;
+}
+table.quicktrack-project {
+    display: inline-table;
+}
+table.quicktrack-project {
+width: 80px;
+margin: 10px;
+}
+table.quicktrack-project td{
+    width: 80px;
+    text-align: center;
+}
+
+table.quicktrack-project td.top{
+    height: 80px;
+
+}
+table.quicktrack-project td.aa {
+    background-color: #FB0007;
+}
+table.quicktrack-project td.ab {
+    background-color: #F0C0C1;
+}
+table.quicktrack-project td.ac {
+    background-color: #A34B0A;
+}
+table.quicktrack-project td.ad {
+    background-color: #C8B02A;
+}
+table.quicktrack-project td.ba {
+    background-color: #20F606;
+}
+table.quicktrack-project td.bb {
+    background-color: #18930B;
+}
+table.quicktrack-project td.bc {
+    background-color: #24AEFF;
+}
+table.quicktrack-project td.bd {
+    background-color: #149E9C;
+}
+table.quicktrack-project td.ca {
+    background-color: #0000FF;
+}
+table.quicktrack-project td.cb {
+    background-color: #F0FD39;
+}
+table.quicktrack-project td.cc {
+    background-color: #90C423;
+}
+table.quicktrack-project td.cd {
+    background-color: #D900CC;
+}
+table.quicktrack-project td.da {
+    background-color: #610081;
+}
+table.quicktrack-project td.db {
+    background-color: #C8005D;
+}
+table.quicktrack-project td.dc {
+    background-color: #D464F0;
+}
+table.quicktrack-project td.dd {
+    background-color: #FD8609;
+}
+table.quicktrack-project td.ea {
+    background-color: #EC2809;
+}
+table.quicktrack-project td.eb {
+    background-color: #FDC50B;
+}
+table.quicktrack-project td.ec {
+    background-color: #EFD276;
+}
+table.quicktrack-project td.ed {
+    background-color: #EE9A28;
+}
+table.quicktrack-project td.fa {
+    background-color: #5FFEEE;
+}
+table.quicktrack-project td.fb {
+    background-color: #C2CCDF;
+}
+table.quicktrack-project td.fc {
+    background-color: #596468;
+}
+table.quicktrack-project td.fd {
+    background-color: #000000;
+}
+</style>
+{% endblock %}
+
+{% block js %}
+<script type="text/javascript">
+window.colored = {{ colored|safe }}.g;
+window.create_project_url = '{% url "create" %}';
+</script>
+<script type="text/javascript" src="{{ STATIC_URL }}js/quicktrack-project-select.js"></script>
 {% endblock %}

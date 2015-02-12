@@ -20,7 +20,7 @@
 
 	  self.setState({abbrev: c});
 	}
-      }
+      };
       return modalButtonClickHandler;
     },
     handleClick: function(e){
@@ -34,9 +34,7 @@
     },
     render: function(){
       var classes = 'color-selection ' + this.state.abbrev;
-      return (
-	  <button className={classes} onClick={this.handleClick}></button>
-      )
+      return <button className={classes} onClick={this.handleClick}></button>;
     }
   });
 

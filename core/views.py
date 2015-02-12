@@ -10,7 +10,6 @@ import arrow
 from django.contrib.auth import authenticate, login
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import User
-from django.core.urlresolvers import reverse
 from django.views.decorators.csrf import (
     csrf_exempt, csrf_protect)
 from django.views.decorators.http import require_http_methods
@@ -21,9 +20,9 @@ from django.http import HttpResponse, HttpResponseForbidden
 from django.shortcuts import render, redirect, get_object_or_404
 from django.utils import formats
 
-from constants import abbr2color
+from constants import abbr2color, COLORS, color2abbr
 from forms import (
-    RegisterForm, LoginForm, TrackTimeForm,
+    RegisterForm, LoginForm, TrackTimeForm, ProjectForm,
     PasswordForm, TimezoneForm, QuickTrackForm)
 from models import Project, TrackedTime, Timezone
 
@@ -92,45 +91,6 @@ def report(request):
         'end': fdate(end),
         'tracked_time': qs,
         'next': request.get_full_path()})
-    # current_color = 0
-    # result = {}
-    # detailed = {}
-    # total_hours = 0
-    # for x in qs:
-    #     if x.project.id not in result:
-    #         result[x.project.id] = {
-    #             'color': current_color,
-    #             'name': x.project.name,
-    #             'hours': 0
-    #         }
-    #         current_color += 1
-    #     result[x.project.id]['hours'] += x.hours
-    #     total_hours += x.hours
-    #     detailed.setdefault(x.project.id, {'project': x.project,
-    #                                        'timeset': []})
-    #     detailed[x.project.id]['timeset'].append((x.hours, x.activity))
-    # detailed = [(v['project'], v['timeset']) for k, v in detailed.items()]
-    # color_classes = (
-    #     ('progress-bar-primary', 'text-primary'),
-    #     ('progress-bar-success', 'text-success'),
-    #     ('progress-bar-info', 'text-info'),
-    #     ('progress-bar-warning', 'text-warning'),
-    #     ('progress-bar-danger', 'text-danger')
-    # )
-    # assert current_color <= len(color_classes), \
-    #     "Too much projects to build progress bar"
-    # report = [{'id': k,
-    #            'color_class': color_classes[v['color']][0],
-    #            'legend_class': color_classes[v['color']][1],
-    #            'name': v['name'], 'hours': v['hours'],
-    #            'percent': v['hours'] / total_hours * 100}
-    #           for k, v
-    #           in result.items()]
-    # report.sort(key=lambda x: x['name'])
-    # return render(request, 'report.html',
-    #               {'year': year, 'month': month, 'day': day,
-    #                'report': report,
-    #                'detailed': detailed})
 
 
 def get_user_date(user, d=None):
@@ -313,14 +273,41 @@ def register(request):
     return render(request, 'register.html', {'register_form': register_f,
                                              'login_form': login_f})
 
+def prepare_colored_projects(projects):
+    result = []
+    colors = set(COLORS)
+    for p in projects:
+        result.append((color2abbr(p.color), (p.name, p.id)))
+        if p.color in colors:    
+            colors.remove(p.color)
+    for c in colors:
+        result.append((color2abbr(c), None))
+    return json.dumps({'g': result})
 
+
+def quick_track_form(projects, get, post=None):
+    if post is not None:
+        args = (post,)
+    else:
+        args = ()
+    if 'pid' in get:
+        kwargs = dict(initial={'project': int(get['pid'])})
+    else:
+        kwargs = {}
+    f = QuickTrackForm(*args, **kwargs)
+    f.fields['project'].queryset = projects
+    return f
+
+
+@login_required
 def quick_track(request, selected_date=None):
+    projects = Project.objects.filter(user=request.user)
     if selected_date is None:
         selected = get_user_date(request.user, selected_date).date()
     else:
         selected = get_user_date(request.user).date()
     if request.method == 'POST':
-        f = QuickTrackForm(request.POST)
+        f = quick_track_form(projects, request.GET, request.POST)
         if f.is_valid():
             t = f.save(commit=False)
             t.track_date = selected
@@ -334,11 +321,15 @@ def quick_track(request, selected_date=None):
                     fdate(t.track_date)
                 ))
             return redirect('dashboard')
+        else:
+            print(f.errors)
+            print(type(request.POST['project']))
     else:
-        f = QuickTrackForm()
-    f.fields['project'].queryset = Project.objects.filter(user=request.user)
+        f = quick_track_form(projects, request.GET)
     return render(request, 'quick_track.html', {
-        'selected_date': selected, 'form': f})
+        'selected_date': selected,
+        'form': f,
+        'colored': prepare_colored_projects(projects)})
 
 
 @require_http_methods(['POST'])
@@ -351,11 +342,26 @@ def delete_tracked_time(request, obj_id):
     return redirect(request.POST['next'])
 
 
-@require_http_methods(['POST'])
 @login_required
-@csrf_exempt
 def create(request):
-    p = Project.objects.create(name=request.POST['name'],
-                               description=request.POST['description'],
-                               user=request.user)
-    return HttpResponse(reverse('project', args=(p.id,)))
+    if 'color' in request.GET:
+        color = abbr2color(request.GET['color'])
+    else:
+        color = None
+    if request.method == 'POST':
+        form = ProjectForm(request.POST)
+        if form.is_valid():
+            p = form.save(commit=False)
+            p.user = request.user
+            p.save()
+            if 'back' in request.GET:
+                return redirect(request.GET['back']+ '?pid=%s' % p.id)
+            else:
+                return redirect('project', p.id)
+    else:
+        if color is not None:
+            form = ProjectForm(initial={'color': color})
+        else:
+            form = ProjectForm()
+    return render(request, 'add.html', {'form': form, 
+                                        'action': request.get_full_path})
