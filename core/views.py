@@ -148,7 +148,7 @@ def get_graph(user, date):
                   .filter(user=user, track_date=date)
                   .values('project', 'project__name', 'project__color')
                   .annotate(hours=Sum('hours'))
-                  .order_by('project__name'))})
+                  .order_by('pk'))})
 
 
 def fdate(x):
