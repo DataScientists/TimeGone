@@ -168,17 +168,6 @@ def dashboard(request):
         selected = get_user_date(request.user, str(request.GET['date'])).date()
     else:
         selected = today
-    # qs = TrackedTime.objects.filter(user=request.user)\
-    #                         .distinct()\
-    #                         .values('track_date')\
-    #                         .order_by('-track_date')
-    # dates = [x['track_date'] for x in qs]
-    # if len(dates) == 0 or today != dates[0]:
-    #     dates.insert(0, today)
-    # yesterday = today - timedelta(days=1)
-    # if dates[1] != yesterday:
-    #     dates.insert(1, yesterday)
-
     dates = [];
     dates.insert(0, today)
     yesterday = today - timedelta(days=1)
@@ -299,18 +288,22 @@ def quick_track_form(projects, get, post=None):
     return f
 
 
-@login_required
-def quick_track(request, selected_date=None):
-    projects = Project.objects.filter(user=request.user)
-    if selected_date is None:
-        selected = get_user_date(request.user, selected_date).date()
+def selected_date_from_get(request):
+    if 'date' in request.GET:
+        selected = get_user_date(request.user, request.GET['date']).date()
     else:
         selected = get_user_date(request.user).date()
+    return selected
+
+
+@login_required
+def quick_track(request):
+    projects = Project.objects.filter(user=request.user)
     if request.method == 'POST':
         f = quick_track_form(projects, request.GET, request.POST)
         if f.is_valid():
             t = f.save(commit=False)
-            t.track_date = selected
+            t.track_date = selected_date_from_get(request)
             t.user = request.user
             t.save()
             messages.success(
@@ -321,13 +314,9 @@ def quick_track(request, selected_date=None):
                     fdate(t.track_date)
                 ))
             return redirect('dashboard')
-        else:
-            print(f.errors)
-            print(type(request.POST['project']))
     else:
         f = quick_track_form(projects, request.GET)
     return render(request, 'quick_track.html', {
-        'selected_date': selected,
         'form': f,
         'colored': prepare_colored_projects(projects)})
 

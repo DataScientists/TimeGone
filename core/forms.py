@@ -1,6 +1,5 @@
 from django import forms
 
-from constants import abbr2color, color2abbr
 from models import Project, TrackedTime, Timezone
 
 
@@ -66,10 +65,6 @@ class QuickTrackForm(forms.ModelForm):
         attrs={'min': 0}))
     project = forms.ModelChoiceField(queryset=Project.objects.all(),
                                      widget=forms.HiddenInput)
-
-    # def clean_project(self, value):
-    #     import pdb; pdb.set_trace()
-    #     return Project.objects.get(pk=value)
 
 
 class ProjectForm(forms.ModelForm):

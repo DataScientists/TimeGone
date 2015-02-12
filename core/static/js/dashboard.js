@@ -1,3 +1,10 @@
+"use strict";
+
+function update_bigtime_href(s){
+    var a = document.getElementById('bigtime');
+    a.href = a.href.replace(/(\/[^\/]*)$/, s);
+}
+
 function draw_graph(data){
   var c = document.getElementById('graph');
   var w = c.width;
@@ -6,17 +13,17 @@ function draw_graph(data){
   ctx.font = "10px Arial";
   ctx.fillStyle = '#000000';
   ctx.clearRect(0, 0, w, h);
-  ctx.save()
-  ctx.rotate(-Math.PI/2)
+  ctx.save();
+  ctx.rotate(-Math.PI/2);
   for (var i = 0; i < 24; i++){
     ctx.fillText('|', - h + i * (h/24), 10);
   }
-  ctx.restore()
+  ctx.restore();
   var base = 0;
   for (var i = 0; i < data.length; i++){
     var x = data[i];
     ctx.fillStyle = x['project__color'];
-    height = (x['hours'] / 24) * h;
+    var height = (x['hours'] / 24) * h;
     ctx.fillRect(15, h - (base + height), w - 15, height);
     ctx.strokeRect(15, h - (base + height), w - 15, height);
     base = base + height;
@@ -51,18 +58,16 @@ function draw(data){
 $(document).ready(function(){
   var $x = $('#dates');
   $x.change(function(){
-    var date = $x.val()
+    var date = $x.val();
     var settings = {
       'data': {'date': date},
       'async': false,
       'dataType': 'json',
       'success': function(data){
 	draw(data.g);
-	if (date == window.today_date){
-	  window.history.pushState({}, window.document.title, '/');
-	} else {
-	  window.history.pushState({}, window.document.title, '/?date=' + date);
-	}
+        var s = (date == window.today_date) ? '/' : ('/?date=' + date);
+	window.history.pushState({}, window.document.title, s);
+        update_bigtime_href(s);
       }
     };
     $.ajax(settings);

@@ -5,7 +5,7 @@
 {% block content %}
       <div class="row">
 	<div class="col-xs-12">
-	  <form method="POST" action="." class="form-horizontal" role="form" id="quick-track-form">
+	  <form method="POST" action="{{ get_full_path }}" class="form-horizontal" role="form" id="quick-track-form">
 	    <legend>Track Time for {{ project.name }}</legend>
 	    {% csrf_token %}
 	    {{ form|as_bootstrap_horizontal }}
