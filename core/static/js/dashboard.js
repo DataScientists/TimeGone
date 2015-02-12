@@ -5,8 +5,21 @@ function update_bigtime_href(s){
     a.href = a.href.replace(/(\/[^\/]*)$/, s);
 }
 
+function sum_hours(data){
+  var hours = 0;
+  for (var i = 0; i < data.length; i++){
+    hours = hours + data[i].hours;
+  }
+  return hours;
+}
+
 function draw_graph(data){
+  var HOUR_HEIGHT = 15;
+  var HOR_OFFSET = 15;
   var c = document.getElementById('graph');
+  c.width = 180;
+  var hours = Math.max(24, sum_hours(data));
+  c.height = HOUR_HEIGHT * hours;
   var w = c.width;
   var h = c.height;
   var ctx = c.getContext('2d');
@@ -15,20 +28,26 @@ function draw_graph(data){
   ctx.clearRect(0, 0, w, h);
   ctx.save();
   ctx.rotate(-Math.PI/2);
-  for (var i = 0; i < 24; i++){
-    ctx.fillText('|', - h + i * (h/24), 10);
+  for (var i = 0; i < hours; i++){
+    if (i == 24){
+      ctx.fillStyle = '#ff0000';
+    }
+    ctx.fillText('|', - h + i * HOUR_HEIGHT, 10);
   }
   ctx.restore();
   var base = 0;
   for (var i = 0; i < data.length; i++){
     var x = data[i];
     ctx.fillStyle = x['project__color'];
-    var height = (x['hours'] / 24) * h;
-    ctx.fillRect(15, h - (base + height), w - 15, height);
-    ctx.strokeRect(15, h - (base + height), w - 15, height);
+    var height = x['hours'] * HOUR_HEIGHT;
+    ctx.fillRect(HOR_OFFSET, h - (base + height), w - HOR_OFFSET, height);
+    ctx.strokeRect(HOR_OFFSET, h - (base + height), w - HOR_OFFSET, height);
     base = base + height;
   }
+  console.log('drawn', hours, data.length);
+  console.log(data);
 }
+
 function draw_legend(data){
   var c = document.getElementById('legend');
   var w = c.width;
@@ -51,10 +70,12 @@ function draw_legend(data){
     ctx.fillRect(offset_x, offset_y + 25 * i - 12 , 20, 20);
   }  
 }
+
 function draw(data){
   draw_graph(data);
   draw_legend(data);
 }
+
 $(document).ready(function(){
   var $x = $('#dates');
   $x.change(function(){
