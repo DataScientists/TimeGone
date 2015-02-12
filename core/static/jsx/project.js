@@ -1,3 +1,4 @@
+"use strict";
 (function(React){
   var Div = React.createClass({
     handleDoubleClick: function(){
@@ -7,9 +8,7 @@
       return {text: this.props.text};
     },
     render: function(){
-      return (
-  	  <div onDoubleClick={this.handleDoubleClick}>{this.props.text}</div>
-      )
+      return <div onDoubleClick={this.handleDoubleClick}>{this.props.text}</div>;
     }
   });
 

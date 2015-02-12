@@ -38,6 +38,7 @@
     }
   });
 
-  var x = document.querySelector('.editable-color');
-  React.render(React.createElement(Color, {data: x.dataset}), x);
+  [].forEach.call(document.querySelectorAll('.editable-color'), function(x){
+    React.render(React.createElement(Color, {data: x.dataset}), x);
+  });
 })(React);

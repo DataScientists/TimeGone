@@ -1,3 +1,4 @@
+"use strict";
 window.addEventListener("load", function(){
   var Row = React.createClass({displayName: 'Row',
     unmount: function() {
@@ -12,10 +13,10 @@ window.addEventListener("load", function(){
         var data = {name: this.state.name,
                     description: this.state.description};
         $.post('/create/', data).success(function(x){
+          var tbody = document.querySelector('table > tbody');
           var tr = document.createElement('tr');
           tr.innerHTML = '<td class="nobr"><a href="' + x + '">' + self.state.name + '</a></td><td>' +  self.state.description + '</td>';
-          var x = document.querySelector('table > tbody');
-          x.appendChild(tr);
+          tbody.appendChild(tr);
           self.unmount();
         });
       }
@@ -29,7 +30,7 @@ window.addEventListener("load", function(){
         name: '',
         description: '',
         url: ''
-      }
+      };
     },
     handleNameChange: function(e){
       this.setState({name: e.target.value});
@@ -40,8 +41,7 @@ window.addEventListener("load", function(){
     render: function(){
       var name = this.state.name;
       var description = this.state.description;
-      return (
-          React.createElement("div", null, 
+      return React.createElement("div", null, 
           React.createElement("input", {className: "form-control", 
         placeholder: "name", 
         value: name, onChange: this.handleNameChange}), 
@@ -55,8 +55,7 @@ window.addEventListener("load", function(){
           React.createElement("button", {type: "button", className: "btn btn-default", onClick: this.clickRemove}, 
           React.createElement("span", {className: "glyphicon glyphicon-remove", 'aria-hidden': "true"})
           )
-          )
-      );
+          );
     }
   });
 

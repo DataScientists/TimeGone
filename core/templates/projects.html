@@ -5,8 +5,7 @@
 	<div class="col-xs-12">
 	  <table class="table condensed">
 	    <caption>
-	      <a class="btn active btn-primary add-project" role="button"
-		 href="#">
+	      <a class="btn active btn-primary add-project" role="button"href="#">
 		<span class="glyphicon glyphicon-plus" aria-hidden="true"></span>
 		Add
 	      </a>
@@ -21,13 +20,15 @@
 	    <tbody>
 	      {% for x in objects %}
 	      <tr>
-		<td class="nobr"><a href="{% url 'project' x.id %}">{{ x.name }}</a></td>
+		<td class="name">
+                    <span class="editable-color"
+	                  data-attr="color"
+	                  data-url="{% url 'project' x.id %}"
+	                  data-color="{{ x.color }}"
+	                  data-abbrev="{{ x.color|color_abbrev }}"></span>
+                    <br>
+                    <a href="{% url 'project' x.id %}" class="nobr">{{ x.name }}</a></td>
 		<td>{{ x.description }}</td>
-		<td><span class="editable-color"
-	      data-attr="color"
-	      data-url="{% url 'project' x.id %}"
-	      data-color="{{ x.color }}"
-	      data-abbrev="{{ x.color|color_abbrev }}"></span></td>
 	      </tr>
 	      {% endfor %}
 	    </tbody>
@@ -41,6 +42,10 @@
 <style type="text/css">
 table.new-project-incomplete, table.new-project-incomplete tr, table.new-project-incomplete tr td {
 background-color: yellow;
+}
+td.name {
+text-align: center;
+width: 70px;
 }
 </style>
 {% endblock %}
