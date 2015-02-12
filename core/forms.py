@@ -64,3 +64,15 @@ class QuickTrackForm(forms.ModelForm):
 
     hours = forms.FloatField(widget=forms.NumberInput(
         attrs={'min': 0}))
+    project = forms.ModelChoiceField(queryset=Project.objects.all(),
+                                     widget=forms.HiddenInput)
+
+    # def clean_project(self, value):
+    #     import pdb; pdb.set_trace()
+    #     return Project.objects.get(pk=value)
+
+
+class ProjectForm(forms.ModelForm):
+    class Meta:
+        model = Project
+        fields = ('name', 'description', 'color')

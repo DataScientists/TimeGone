@@ -1,17 +1,12 @@
 window.addEventListener("load", function(){
   var Row = React.createClass({displayName: 'Row',
     unmount: function() {
-      console.log('unmounting');
       var node = this.getDOMNode();
-      console.log('the node', node);
       React.unmountComponentAtNode(node);
-      console.log('unmounted');
       node.parentNode.removeChild(node);
-      console.log('removed from node');
     },
     clickOk: function(e){
       e.preventDefault();
-      console.log('clicked ok');
       var self = this;
       if (this.state.name && this.state.description){
         var data = {name: this.state.name,
@@ -20,9 +15,7 @@ window.addEventListener("load", function(){
           var tr = document.createElement('tr');
           tr.innerHTML = '<td class="nobr"><a href="' + x + '">' + self.state.name + '</a></td><td>' +  self.state.description + '</td>';
           var x = document.querySelector('table > tbody');
-          console.log('x', x);
           x.appendChild(tr);
-          console.log('done :)');
           self.unmount();
         });
       }

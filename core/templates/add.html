@@ -9,7 +9,7 @@
 {% block content %}
 <div class="row">
   <div class="col-xs-12">
-    <form method="POST" action=".">
+    <form method="POST" action="{{ action }}">
       <legend>Add Project</legend>
       {% csrf_token %}
       {{ form|as_bootstrap }}
