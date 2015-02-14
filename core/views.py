@@ -146,8 +146,7 @@ def get_graph(user, date):
     return json.dumps({
         'g': list(TrackedTime.objects
                   .filter(user=user, track_date=date)
-                  .values('project', 'project__name', 'project__color')
-                  .annotate(hours=Sum('hours'))
+                  .values('project', 'project__name', 'project__color', 'hours')
                   .order_by('pk'))})
 
 
