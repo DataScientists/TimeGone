@@ -17,5 +17,12 @@ urlpatterns = patterns(
     url(r'^auth/logout/$', auth_views.logout_then_login,
         name='logout'),
     url(r'^delete-tracked-time/(\d+)$', views.delete_tracked_time,
-        name='delete-tracked-time')
+        name='delete-tracked-time'),
+    # url(r'^tracked-time/(\d+)/(.+)$/', views.edit_tracked_time,
+    #     name='edit-tracked-time')
+    url(r'^time/delete/(\d+)$', views.time_delete, name="time_delete"),
+    url(r'^time/project/(\d+)$', views.time_project_api, name="time_project_api"),
+    url(r'^time/hours/(\d+)$', views.time_hours_api, name="time_hours_api"),
+    url(r'^time/activity/(\d+)$', views.time_activity_api, name="time_activity_api"),
+    url(r'^time/track_date/(\d+)$', views.time_track_date_api, name="time_track_date_api")
 )

@@ -34,8 +34,16 @@
             </thead>
             <tbody>
                 {% for x in tracked_time %}
-                <tr>
-                    <td>{{ x.project.name }}</td>
+                <tr class="editable-inplace" data-props='{{x|safe}}'>
+                    {% comment %}
+                    data-pk="{{ x.id }}"
+                    data-project-name="{{ x.project.name }}"
+                    data-hours="{{ x.hours }}"
+                    data-activity="{{ x.activity }}"
+                    data-track_date="{{ x.track_date }}"
+                    data-delete-url="{% url 'delete-tracked-time' x.id %}"
+                    >
+                    <td class="editable-inplace" data-url="">{{ x.project.name }}</td>
                     <td>{{ x.hours }}</td>
                     <td>{{ x.activity }}</td>
                     <td>{{ x.track_date }}</td>
@@ -46,87 +54,13 @@
                             <button type="submit" class="btn btn-default" aria-label="remove">
                                 <span class="glyphicon glyphicon-trash" aria-hidden="true"></span>
                     </button></form></td>
+                    {% endcomment %}
                 </tr>
                 {% endfor %}
             </tbody>
         </table>
     </div>
 </div>
-    <!--     Start: <input class="datepicker"  class="form-control" value="{{ year }}-{{ month }}-{{ day }}"> -->
-    <!--     End: <input class="datepicker"  class="form-control"  value="{{ year }}-{{ month }}-{{ day }}"> -->
-    <!--     <button>Go</button> -->
-    <!--     <input src="{{ STATIC_URL }}img/pie.png"/> -->
-    <!--     <input src="{{ STATIC_URL }}img/bar.png"/> -->
-    <!-- </div> -->
-
-      <!-- <div class="row"> -->
-      <!--   <div class="col-xs-6"> -->
-      <!--     <a href="{% url 'projects' %}" class="btn"> -->
-      <!--   	<span class="glyphicon glyphicon-arrow-left"></span> -->
-      <!--   	Projects</a> -->
-      <!--   </div> -->
-      <!--   <div class="col-xs-6"> -->
-      <!--     <input class="datepicker" value="{{ year }}-{{ month }}-{{ day }}"> -->
-      <!--   </div> -->
-      <!-- </div> -->
-      <!-- <div class="row"> -->
-      <!--   <div class="col-xs-6"> -->
-      <!--     <table class="table"> -->
-      <!--       <thead> -->
-      <!--         <tr> -->
-      <!--   	<th>Project</th> -->
-      <!--   	<th>Hours</th> -->
-      <!--         </tr> -->
-      <!--       </thead> -->
-      <!--       <tbody> -->
-      <!--         {% for x in report %} -->
-      <!--         <tr> -->
-      <!--   	<td class="{{ x.legend_class }}">{{ x.name }}</td> -->
-      <!--   	<td>{{ x.hours }}</td> -->
-      <!--         </tr> -->
-      <!--         {% endfor %} -->
-      <!--       </tbody> -->
-      <!--     </table> -->
-      <!--   </div> -->
-      <!--   <div class="col-xs-6"> -->
-      <!--     <div class="progress"> -->
-      <!--       {% for x in report %} -->
-      <!--       <div class="progress-bar {{ x.color_class }}" -->
-      <!--   	 style="width: {{ x.percent }}%"> -->
-      <!--         <span class="sr-only">{{ x.percent }}% {{ x.name }}</span> -->
-      <!--         {{ x.percent }}% -->
-      <!--       </div> -->
-      <!--       {% endfor %} -->
-      <!--     </div> -->
-      <!--   </div> -->
-      <!-- </div> -->
-      <!-- <div class="row"> -->
-      <!--   <div class="cols-xs-12"> -->
-      <!--     <table  class="table"> -->
-      <!--       <thead> -->
-      <!--         <caption>Detailed&nbsp;Report</caption> -->
-      <!--         <tr> -->
-      <!--   	<th>Hours</th> -->
-      <!--   	<th>Activity</th> -->
-      <!--         </tr> -->
-      <!--       </thead> -->
-      <!--       <tbody> -->
-      <!--     {% for project, timeset in detailed %} -->
-      <!--     <tr class="info"> -->
-      <!--       <td colspan="2"><b>{{ project.name }}</b></td> -->
-      <!--     <tr> -->
-      <!--       {% for hours, activity in timeset %} -->
-      <!--     <tr> -->
-      <!--       <td>{{ hours }}</td> -->
-      <!--       <td>{{ activity }}</td> -->
-      <!--     </tr> -->
-      <!--     {% endfor %} -->
-      <!--     {% endfor %} -->
-      <!--       </tbody> -->
-      <!--     </table> -->
-
-      <!--   </div> -->
-      <!-- </div> -->
 {% endblock %}
 
 {% block css %}

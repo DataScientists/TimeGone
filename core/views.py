@@ -7,6 +7,7 @@ from datetime import date, timedelta
 
 import arrow
 
+from django.core.urlresolvers import reverse
 from django.contrib.auth import authenticate, login
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import User
@@ -33,7 +34,6 @@ def settings(request):
         if 'password' == request.POST.get('action'):
             pf = PasswordForm(request.POST)
             tf = TimezoneForm()
-
             if pf.is_valid():
                 ok = request.user.check_password(
                     pf.cleaned_data['old_password'])
@@ -86,10 +86,31 @@ def report(request):
         user=request.user,
         track_date__gte=start,
         track_date__lte=end).order_by('id')
+    projects = list((list(x) for x in
+                     Project.objects.filter(user=request.user).
+                     order_by('-name').values_list('id', 'name')))
+    tracked_time = list((json.dumps({
+        # remove button
+        'delete_url': reverse('time_delete', args=(x.id,)),
+        # project
+        'project_name': x.project.name,
+        'project_pk': x.id,
+        'project_url': reverse('time_project_api', args=(x.id,)),
+        'projects': projects,
+        # hours
+        'hours': x.hours,
+        'hours_url': reverse('time_hours_api', args=(x.id,)),
+        # activity
+        'activity': x.activity,
+        'activity_url': reverse('time_activity_api', args=(x.id,)),
+        # track date
+        'track_date': fdate(x.track_date),
+        'track_date_url': reverse('time_track_date_api', args=(x.id,))
+    }) for x in qs))
     return render(request, "report.html", {
         'start': fdate(start),
         'end': fdate(end),
-        'tracked_time': qs,
+        'tracked_time': tracked_time,
         'next': request.get_full_path()})
 
 
@@ -167,11 +188,11 @@ def dashboard(request):
         selected = get_user_date(request.user, str(request.GET['date'])).date()
     else:
         selected = today
-    dates = [];
+    dates = []
     dates.insert(0, today)
     yesterday = today - timedelta(days=1)
     dates.insert(1, yesterday)
-    for i in range(2,7):
+    for i in range(2, 7):
         last_seven = today - timedelta(days=i)
         dates.insert(i, last_seven)
 
@@ -261,12 +282,13 @@ def register(request):
     return render(request, 'register.html', {'register_form': register_f,
                                              'login_form': login_f})
 
+
 def prepare_colored_projects(projects):
     result = []
     colors = set(COLORS)
     for p in projects:
         result.append((color2abbr(p.color), (p.name, p.id)))
-        if p.color in colors:    
+        if p.color in colors:
             colors.remove(p.color)
     for c in colors:
         result.append((color2abbr(c), None))
@@ -343,7 +365,7 @@ def create(request):
             p.user = request.user
             p.save()
             if 'back' in request.GET:
-                return redirect(request.GET['back']+ '?pid=%s' % p.id)
+                return redirect(request.GET['back'] + '?pid=%s' % p.id)
             else:
                 return redirect('project', p.id)
     else:
@@ -351,5 +373,55 @@ def create(request):
             form = ProjectForm(initial={'color': color})
         else:
             form = ProjectForm()
-    return render(request, 'add.html', {'form': form, 
+    return render(request, 'add.html', {'form': form,
                                         'action': request.get_full_path})
+
+
+@login_required
+@require_http_methods(['POST'])
+def time_delete(request, pk):
+    tt = get_object_or_404(TrackedTime, user=request.user, pk=pk)
+    tt.delete()
+    return HttpResponse('')
+
+
+@require_http_methods(['POST'])
+@login_required
+@csrf_exempt
+def time_project_api(request, pk):
+    tt = get_object_or_404(TrackedTime, user=request.user, pk=pk)
+    project = Project.objects.get(user=request.user,
+                                  pk=request.POST['pk'])
+    tt.project = project
+    tt.save()
+    return HttpResponse('')
+
+
+@require_http_methods(['POST'])
+@login_required
+@csrf_exempt
+def time_hours_api(request, pk):
+    tt = get_object_or_404(TrackedTime, user=request.user, pk=pk)
+    tt.hours = request.POST['hours']
+    tt.save()
+    return HttpResponse('')
+
+
+@require_http_methods(['POST'])
+@login_required
+@csrf_exempt
+def time_activity_api(request, pk):
+    tt = get_object_or_404(TrackedTime, user=request.user, pk=pk)
+    tt.activity = request.POST['activity']
+    tt.save()
+    return HttpResponse('')
+
+
+@require_http_methods(['POST'])
+@login_required
+@csrf_exempt
+def time_track_date_api(request, pk):
+    tt = get_object_or_404(TrackedTime, user=request.user, pk=pk)
+    tt.track_date = request.POST['track_date']
+    tt.save()
+    return HttpResponse('')
