@@ -44,29 +44,38 @@ function draw_graph(data){
     ctx.strokeRect(HOR_OFFSET, h - (base + height), w - HOR_OFFSET, height);
     base = base + height;
   }
-  console.log('drawn', hours, data.length);
-  console.log(data);
 }
 
 function draw_legend(data){
+  var i;
+
+  var seen = {};
+  var data_to_draw = [];
+  for (i = 0; i < data.length; i++){
+    var project_name = data[i]['project__name'];
+    if (seen[project_name] == undefined){
+      seen[project_name] = 1;
+      data_to_draw.push([project_name, data[i]['project__color']]);
+    }; 
+  }
+
   var c = document.getElementById('legend');
   var w = c.width;
   var h = c.height;
   var ctx = c.getContext('2d');
   ctx.clearRect(0, 0, w, h);
+
   var offset_y = 25;
   var offset_x = 10;
 
   ctx.font = "10px Arial";
   ctx.fillStyle = '#000000';
-  for (var i = 0; i < data.length; i++){
-    var x = data[i];
-    ctx.fillText(x['project__name'], offset_x + 30, offset_y + 25 * i);
+  for (i = 0; i < data_to_draw.length; i++){
+    ctx.fillText(data_to_draw[i][0], offset_x + 30, offset_y + 25 * i);
   }
 
-  for (var i = 0; i < data.length; i++){
-    var x = data[i];
-    ctx.fillStyle = x['project__color'];
+  for (i = 0; i < data_to_draw.length; i++){
+    ctx.fillStyle = data_to_draw[i][1];
     ctx.fillRect(offset_x, offset_y + 25 * i - 12 , 20, 20);
   }  
 }
