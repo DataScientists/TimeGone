@@ -70,10 +70,10 @@ jQuery(function($){
       }
     }
   });
-  var EditableActivity = React.createClass({
+  var EditableDescription = React.createClass({
     getInitialState: function(){
       return {
-        'activity': this.props.activity,
+        'description': this.props.description,
         'state': 'view'
       };
     },
@@ -81,21 +81,21 @@ jQuery(function($){
       this.setState({'state': 'edit'});
     },
     saveEdit: function(){
-      $.post(this.props.url, {activity: this.state.activity});
+      $.post(this.props.url, {description: this.state.description});
       this.setState({'state': 'view'});
     },
     cancelEdit: function(){
       this.setState({'state': 'view'});
     },
     onChange: function(event){
-      this.setState({'activity': event.target.value});
+      this.setState({'description': event.target.value});
     },
     render: function(){
       if (this.state.state == 'view'){
-        return <span onClick={this.onClick}>{this.state.activity}</span>;
+        return <span onClick={this.onClick}>{this.state.description}</span>;
       } else {
         return <div>
-                    <input type="text" value={this.state.activity} onChange={this.onChange}/>
+                    <input type="text" value={this.state.description} onChange={this.onChange}/>
           <div className="btn-group" role="group">
           <button type="button" className="btn btn-default" onClick={this.saveEdit}>
           <span className="glyphicon glyphicon-ok" aria-hidden="true"></span>
@@ -206,7 +206,7 @@ jQuery(function($){
       pk={this.props.data.project_pk}
       projects={this.props.data.projects}/></td>
         <td><EditableHours hours={this.props.data.hours} url={this.props.data.hours_url}/></td>
-        <td><EditableActivity activity={this.props.data.activity} url={this.props.data.activity_url}/></td>
+        <td><EditableDescription description={this.props.data.description} url={this.props.data.description_url}/></td>
         <td><EditableTrackDate track_date={this.props.data.track_date} url={this.props.data.track_date_url} unmount={this.unmount}/></td>
         <td><RemoveButton unmount={this.unmount} url={this.props.data.delete_url}/></td>
       </tr>;

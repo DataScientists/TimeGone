@@ -101,9 +101,9 @@ def report(request):
         # hours
         'hours': x.hours,
         'hours_url': reverse('time_hours_api', args=(x.id,)),
-        # activity
-        'activity': x.activity,
-        'activity_url': reverse('time_activity_api', args=(x.id,)),
+        # description
+        'description': x.description,
+        'description_url': reverse('time_description_api', args=(x.id,)),
         # track date
         'track_date': fdate(x.track_date),
         'track_date_url': reverse('time_track_date_api', args=(x.id,))
@@ -157,7 +157,7 @@ def track(request, _id):
             messages.success(
                 request,
                 'Added {} hours for {} at date {}'.format(
-                    obj.hours, obj.activity, fdate(obj.track_date)))
+                    obj.hours, obj.description, fdate(obj.track_date)))
             return redirect('projects')
     else:
         f = TrackTimeForm()
@@ -417,9 +417,9 @@ def time_hours_api(request, pk):
 @require_http_methods(['POST'])
 @login_required
 @csrf_exempt
-def time_activity_api(request, pk):
+def time_description_api(request, pk):
     tt = get_object_or_404(TrackedTime, user=request.user, pk=pk)
-    tt.activity = request.POST['activity']
+    tt.description = request.POST['description']
     tt.save()
     return HttpResponse('')
 

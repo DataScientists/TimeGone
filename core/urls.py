@@ -23,6 +23,6 @@ urlpatterns = patterns(
     url(r'^time/delete/(\d+)$', views.time_delete, name="time_delete"),
     url(r'^time/project/(\d+)$', views.time_project_api, name="time_project_api"),
     url(r'^time/hours/(\d+)$', views.time_hours_api, name="time_hours_api"),
-    url(r'^time/activity/(\d+)$', views.time_activity_api, name="time_activity_api"),
+    url(r'^time/description/(\d+)$', views.time_description_api, name="time_description_api"),
     url(r'^time/track_date/(\d+)$', views.time_track_date_api, name="time_track_date_api")
 )

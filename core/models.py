@@ -25,7 +25,7 @@ class TrackedTime(models.Model):
     track_date = models.DateField(null=True)
     created_at = models.DateTimeField(auto_now_add=True)
     hours = models.FloatField(validators=[MinValueValidator(0)])
-    activity = models.CharField(max_length=255, default='')
+    description = models.CharField(max_length=255, default='')
     manual_date = models.BooleanField(default=False)
 
 

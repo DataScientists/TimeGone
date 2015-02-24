@@ -39,13 +39,13 @@
                     data-pk="{{ x.id }}"
                     data-project-name="{{ x.project.name }}"
                     data-hours="{{ x.hours }}"
-                    data-activity="{{ x.activity }}"
+                    data-description="{{ x.description }}"
                     data-track_date="{{ x.track_date }}"
                     data-delete-url="{% url 'delete-tracked-time' x.id %}"
                     >
                     <td class="editable-inplace" data-url="">{{ x.project.name }}</td>
                     <td>{{ x.hours }}</td>
-                    <td>{{ x.activity }}</td>
+                    <td>{{ x.description }}</td>
                     <td>{{ x.track_date }}</td>
                     <td><form method="POST" action="{% url 'delete-tracked-time' x.id %}">
                             <input type="hidden" name="id" value="{{ x.id }}"/>
