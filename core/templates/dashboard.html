@@ -2,7 +2,7 @@
 {% block content %}
 <div class="row">
   <div class="col-xs-12">
-      <a href="{% url 'quick_track' %}" class="btn btn-primary" id="bigtime">Big Time</a>
+      <a href="{% url 'quick_track' %}{% ifnotequal selected_date today_date %}?date={{ selected_date }}{% endifnotequal %}" class="btn btn-primary" id="bigtime">Big Time</a>
     <select id="dates">
       {% for x in dates %}
       <option value="{{ x }}" 
