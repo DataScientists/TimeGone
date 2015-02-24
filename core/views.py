@@ -15,9 +15,9 @@ from django.views.decorators.csrf import (
     csrf_exempt, csrf_protect)
 from django.views.decorators.http import require_http_methods
 from django.contrib import messages
-from django.db.models import Sum
 from django.db.utils import IntegrityError
-from django.http import HttpResponse, HttpResponseForbidden
+from django.http import (HttpResponse, HttpResponseForbidden,
+                         HttpResponseRedirect)
 from django.shortcuts import render, redirect, get_object_or_404
 from django.utils import formats
 
@@ -164,11 +164,10 @@ def track(request, _id):
 
 
 def get_graph(user, date):
-    return json.dumps({
-        'g': list(TrackedTime.objects
-                  .filter(user=user, track_date=date)
-                  .values('project', 'project__name', 'project__color', 'hours')
-                  .order_by('pk'))})
+    qs = TrackedTime.objects.filter(user=user, track_date=date)\
+                            .values('project', 'project__name',
+                                    'project__color', 'hours').order_by('pk')
+    return json.dumps({'g': list(qs)})
 
 
 def fdate(x):
@@ -334,7 +333,12 @@ def quick_track(request):
                     t.project.name,
                     fdate(t.track_date)
                 ))
-            return redirect('dashboard')
+            today = get_user_date(request.user).date()
+            if t.track_date == today:
+                return redirect('dashboard')
+            else:
+                url = reverse('dashboard') + '?date=%s' % fdate(t.track_date)
+                return HttpResponseRedirect(url)
     else:
         f = quick_track_form(projects, request.GET)
     return render(request, 'quick_track.html', {
