@@ -8,18 +8,19 @@ from datetime import date, timedelta
 import arrow
 
 from django.core.urlresolvers import reverse
-from django.contrib.auth import authenticate, login
-from django.contrib.auth.decorators import login_required
-from django.contrib.auth.models import User
-from django.views.decorators.csrf import (
-    csrf_exempt, csrf_protect)
-from django.views.decorators.http import require_http_methods
-from django.contrib import messages
+from django.db.models import Sum
 from django.db.utils import IntegrityError
 from django.http import (HttpResponse, HttpResponseForbidden,
                          HttpResponseRedirect)
+from django.views.decorators.csrf import csrf_exempt, csrf_protect
 from django.shortcuts import render, redirect, get_object_or_404
 from django.utils import formats
+from django.views.decorators.http import require_http_methods
+
+from django.contrib.auth import authenticate, login
+from django.contrib.auth.decorators import login_required
+from django.contrib.auth.models import User
+from django.contrib import messages
 
 from constants import abbr2color, COLORS, color2abbr
 from forms import (
@@ -318,7 +319,9 @@ def selected_date_from_get(request):
 
 @login_required
 def quick_track(request):
-    projects = Project.objects.filter(user=request.user)
+    projects = Project.objects.filter(user=request.user)\
+                              .annotate(Sum('trackedtime__hours'))\
+                              .order_by('-trackedtime__hours__sum')
     if request.method == 'POST':
         f = quick_track_form(projects, request.GET, request.POST)
         if f.is_valid():
