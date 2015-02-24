@@ -1,3 +1,5 @@
+"use strict";
+
 (function(React){
 
   var Color = React.createClass({
@@ -6,7 +8,7 @@
       var modalButtonClickHandler = function(e){
 	e.preventDefault();
 	var $m = $('#modal-color');
-	$('button', $m).unbind('click', modalButtonClickHandler);
+	$('button.color-selection', $m).unbind('click', modalButtonClickHandler);
 	$m.modal('hide');
 
 	var c = e.target.className.split(" ")[1];
@@ -26,7 +28,7 @@
     handleClick: function(e){
       e.preventDefault();
       var $m = $('#modal-color');
-      $('button', $m).click(this.mbchFactory());
+      $('button.color-selection', $m).click(this.mbchFactory());
       $m.modal('show');
     },
     getInitialState: function(){
