@@ -27,8 +27,15 @@
 	                  data-color="{{ x.color }}"
 	                  data-abbrev="{{ x.color|color_abbrev }}"></span>
                     <br>
-                    <a href="{% url 'project' x.id %}" class="nobr">{{ x.name }}</a></td>
-		<td>{{ x.description }}</td>
+                    <span class="click-editable"
+                          data-attr="name"
+                          data-url="{% url 'project' x.id %}">{{ x.name }}</span>
+                </td>
+		<td>
+                    <span class="click-editable"
+                          data-attr="description"
+                          data-url="{% url 'project' x.id %}">{{ x.description }}</span>
+                </td>
 	      </tr>
 	      {% endfor %}
 	    </tbody>

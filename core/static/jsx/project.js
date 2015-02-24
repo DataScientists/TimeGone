@@ -1,14 +1,15 @@
 "use strict";
 (function(React){
   var Div = React.createClass({
-    handleDoubleClick: function(){
+    handleClick: function(){
       this.props.handle(true, this.state.text);
     },
     getInitialState: function() {
       return {text: this.props.text};
     },
     render: function(){
-      return <div onDoubleClick={this.handleDoubleClick}>{this.props.text}</div>;
+      console.log('rendered inside');
+      return <div onClick={this.handleClick}>{this.props.text}</div>;
     }
   });
 
