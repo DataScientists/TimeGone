@@ -29,41 +29,50 @@ from forms import (
 from models import Project, TrackedTime, Timezone
 
 
+def timezone_form(request):
+    args = []
+    kwargs = {}
+    qs = Timezone.objects.filter(user=request.user)
+    if request.method == 'POST':
+        if request.POST.get('action') == 'tz':
+            args.append(request.POST)
+            if qs.exists():
+                kwargs['instance'] = qs[0]
+            else:
+                obj, created = Timezone.objects.get_or_create(user=request.user)
+                kwargs['instance'] = obj
+    if qs.exists():
+        kwargs['initial'] = {'timezone': qs[0].timezone}
+    return TimezoneForm(*args, **kwargs)
+
+
 @login_required
 def settings(request):
+    tf = timezone_form(request)
     if request.method == 'POST':
         if 'password' == request.POST.get('action'):
             pf = PasswordForm(request.POST)
-            tf = TimezoneForm()
             if pf.is_valid():
                 ok = request.user.check_password(
                     pf.cleaned_data['old_password'])
                 if ok:
                     request.user.set_password(
                         pf.cleaned_data['new_password'])
-                    messages.success(request,
-                                     'Password was changed.')
+                    messages.success(request, 'Password was changed.')
                     return redirect(request.path)
                 else:
-                    pf.add_error('old_password',
-                                 'Wrong old password')
+                    pf.add_error('old_password', 'Wrong old password')
         elif 'tz' == request.POST.get('action'):
             pf = PasswordForm()
-            obj, created = Timezone.objects.get_or_create(
-                user=request.user)
-            tf = TimezoneForm(request.POST, instance=obj)
             if tf.is_valid():
                 tz = tf.save()
-                messages.success(request,
-                                 'Timezone set to {}'.format(
-                                     tz.timezone))
+                messages.success(request, 
+                                 'Timezone set to {}'.format(tz.timezone))
                 return redirect(request.path)
         else:
             pf = PasswordForm()
-            tf = TimezoneForm()
     else:
         pf = PasswordForm()
-        tf = TimezoneForm()
     return render(request, 'settings.html', {'password_form': pf,
                                              'tz_form': tf})
 
