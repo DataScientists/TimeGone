@@ -6,9 +6,13 @@
       <div class="row">
 	<div class="col-xs-12">
 	  <form method="POST" action="{{ get_full_path }}" class="form-horizontal" role="form" id="quick-track-form">
+
 	    <legend>Track Time for {{ project.name }}</legend>
 	    {% csrf_token %}
 	    {{ form|as_bootstrap_horizontal }}
+          <input id="slider1" type="range" min="0" max="100" step="10" />
+          <p>Input tags here:
+          <input id="tag1" value="tags" /></p>
 	    <div class="form-actions">
 	      <a href="{% url 'projects' %}" class="btn">
 		<span class="glyphicon glyphicon-arrow-left"></span>
