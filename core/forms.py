@@ -1,4 +1,5 @@
 from django import forms
+from django.utils.safestring import mark_safe
 
 from models import Project, TrackedTime, Timezone
 
@@ -56,6 +57,21 @@ class TrackTimeForm(forms.ModelForm):
         super(TrackTimeForm, self).__init__(*args, **kwargs)
 
 
+class SatisfactionSlider(forms.NumberInput):
+    def render(self, name, value, attrs=None):
+        super(SatisfactionSlider, self).render(name, value, attrs)
+        tag_attrs = {k: v for k, v in attrs.items()}
+        if name:
+            tag_attrs['name'] = name
+        if value:
+            tag_attrs['value'] = value
+        shadowed = ['type']
+        attr_insertion = u' '.join([u'%s="%s"' % (k, v) for k, v in 
+                                    tag_attrs.items() if k not in shadowed])
+        tag_line = u'<input type="range" min="0" max="100" step="10" %s />' % attr_insertion
+        return mark_safe(tag_line)
+
+
 class QuickTrackForm(forms.ModelForm):
     class Meta:
         model = TrackedTime
@@ -65,6 +81,7 @@ class QuickTrackForm(forms.ModelForm):
         attrs={'min': 0}))
     project = forms.ModelChoiceField(queryset=Project.objects.all(),
                                      widget=forms.HiddenInput)
+    satisfaction = forms.IntegerField(widget=SatisfactionSlider)
 
 
 class ProjectForm(forms.ModelForm):
