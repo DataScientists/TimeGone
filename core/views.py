@@ -39,7 +39,7 @@ def timezone_form(request):
             if qs.exists():
                 kwargs['instance'] = qs[0]
             else:
-                obj, created = Timezone.objects.get_or_create(user=request.user)
+                obj = Timezone.objects.create(user=request.user)
                 kwargs['instance'] = obj
     if qs.exists():
         kwargs['initial'] = {'timezone': qs[0].timezone}
@@ -66,7 +66,7 @@ def settings(request):
             pf = PasswordForm()
             if tf.is_valid():
                 tz = tf.save()
-                messages.success(request, 
+                messages.success(request,
                                  'Timezone set to {}'.format(tz.timezone))
                 return redirect(request.path)
         else:
@@ -125,21 +125,16 @@ def report(request):
 
 
 def get_user_date(user, d=None):
-    if user.timezone_set.exists():
-        tz = user.timezone_set.all()[0].timezone
-        try:
-            if d is None:
-                a = arrow.now(tz)
-            else:
-                a = arrow.Arrow.strptime(d, '%Y-%m-%d', tz)
-        except arrow.parser.ParserError:
-            logging.exception('invalid tz %s for user %s', tz, user.id)
-            if d is None:
-                a = arrow.utcnow()
-            else:
-                a = arrow.Arrow.strptime(d, '%Y-%m-%d')
-    else:
-        logging.error('missing tz for user %s', user.id)
+    if not user.timezone_set.exists():
+        Timezone.objects.create(user=user)
+    tz = user.timezone_set.all()[0].timezone
+    try:
+        if d is None:
+            a = arrow.now(tz)
+        else:
+            a = arrow.Arrow.strptime(d, '%Y-%m-%d', tz)
+    except arrow.parser.ParserError:
+        logging.exception('invalid tz %s for user %s', tz, user.id)
         if d is None:
             a = arrow.utcnow()
         else:
@@ -268,6 +263,7 @@ def register(request):
                         username=register_f.cleaned_data['username'],
                         password=register_f.cleaned_data['password'])
                     login(request, user)
+                    Timezone.objects.create(user=user)
                     return redirect('dashboard')
         elif a == 'login':
             register_f = RegisterForm()
