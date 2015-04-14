@@ -489,3 +489,15 @@ def time_track_date_api(request, pk):
     tt.track_date = request.POST['track_date']
     tt.save()
     return HttpResponse('')
+
+
+@require_http_methods(['POST'])
+@login_required
+@csrf_exempt
+def delete_project(request, pk):
+    project = Project.objects.get(user=request.user, pk=pk)
+    deleted_project_id = project.pk
+    TrackedTime.objects.filter(project=project).update(
+        project=None, deleted_project_id=deleted_project_id)
+    project.delete()
+    return redirect('projects')

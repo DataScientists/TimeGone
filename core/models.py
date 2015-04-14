@@ -21,7 +21,7 @@ class Project(models.Model):
 
 class TrackedTime(models.Model):
     user = models.ForeignKey(User)
-    project = models.ForeignKey(Project)
+    project = models.ForeignKey(Project, null=True)
     track_date = models.DateField(null=True)
     created_at = models.DateTimeField(auto_now_add=True)
     hours = models.FloatField(validators=[MinValueValidator(0)])
@@ -29,6 +29,7 @@ class TrackedTime(models.Model):
     tags = models.CharField(max_length=255,default='')
     description = models.CharField(max_length=255, default='')
     manual_date = models.BooleanField(default=False)
+    deleted_project_id = models.IntegerField(null=True)
 
 
 class Timezone(models.Model):
