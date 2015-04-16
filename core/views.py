@@ -443,6 +443,7 @@ def create(request):
 
 @login_required
 @require_http_methods(['POST'])
+@csrf_exempt
 def time_delete(request, pk):
     tt = get_object_or_404(TrackedTime, user=request.user, pk=pk)
     tt.delete()

@@ -18,7 +18,7 @@ jQuery(function($){
              });
     },
     render: function(){
-      return React.createElement("button", {className: "btn btn-default", 'aria-label': "remove", onClick: this.props.unmount}, 
+      return React.createElement("button", {className: "btn btn-default", 'aria-label': "remove", onClick: this.onClick}, 
         React.createElement("span", {className: "glyphicon glyphicon-trash", 'aria-hidden': "true"})
         );
     }
@@ -129,7 +129,6 @@ jQuery(function($){
       this.setState({'hours': event.target.value});
     },
     render: function(){
-      console.log(this.state);
       if (this.state.state == 'view'){
         return React.createElement("span", {onClick: this.onClick}, this.state.hours);
       } else {
