@@ -150,6 +150,15 @@ table.quicktrack-project td.fd {
     background-color: #000000;
 }
 </style>
+<link rel="stylesheet" href="//code.jquery.com/ui/1.11.4/themes/smoothness/jquery-ui.css">
+<style>
+    .ui-autocomplete-category {
+    font-weight: bold;
+    padding: .2em .4em;
+    margin: .8em 0 .2em;
+    line-height: 1.5;
+    }
+</style>
 {% endblock %}
 
 {% block js %}
@@ -157,5 +166,15 @@ table.quicktrack-project td.fd {
 window.colored = {{ colored|safe }}.g;
 window.create_project_url = '{% url "create" %}';
 </script>
+<script src="{{ STATIC_URL }}vendors/jqui/jquery-ui.js"></script>
 <script type="text/javascript" src="{{ STATIC_URL }}js/quicktrack-project-select.js"></script>
+<script type="text/javascript" src="{{ STATIC_URL }}js/autocomplete.widget.js"></script>
+<script type="text/javascript">
+    window.tag_data = [
+    {% for label, category in tag_data %}
+    {'label': '{{ label|addslashes }}', 'category': '{{ category|addslashes }}'}{% if forloop.last %}{% else %}, {% endif %}
+    {% endfor %}
+    ];
+</script>
+<script type="text/javascript" src="{{ STATIC_URL }}js/tag.autocomplete.js"></script>
 {% endblock %}

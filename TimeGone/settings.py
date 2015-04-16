@@ -103,3 +103,12 @@ try:
     from local_settings import *
 except ImportError:
     pass
+
+CATEGORIES = [
+    # option, category
+    ('lazy', 'Personal'),
+    ('hurry', 'Personal'),
+    ('red', 'Colors'),
+    ('green', 'Colors'),
+    ('blue', 'Colors')
+]

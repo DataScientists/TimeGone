@@ -10,6 +10,7 @@ from datetime import date, timedelta
 
 import arrow
 
+from django.conf import settings as django_settings
 from django.core.urlresolvers import reverse
 from django.db.models import Sum
 from django.db.utils import IntegrityError
@@ -217,7 +218,10 @@ def track(request, _id):
             return redirect('projects')
     else:
         f = TrackTimeForm()
-    return render(request, 'track.html', {'form': f, 'project': project})
+    return render(request, 
+                  'track.html', 
+                  {'form': f, 
+                   'project': project})
 
 
 def get_graph(user, date):
@@ -403,7 +407,8 @@ def quick_track(request):
         f = quick_track_form(projects, request.GET)
     return render(request, 'quick_track.html', {
         'form': f,
-        'colored': prepare_colored_projects(projects)})
+        'colored': prepare_colored_projects(projects),
+        'tag_data': django_settings.CATEGORIES})
 
 
 @require_http_methods(['POST'])
