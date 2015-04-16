@@ -35,6 +35,8 @@
                     <span class="click-editable"
                           data-attr="description"
                           data-url="{% url 'project' x.id %}">{{ x.description }}</span>
+                    <br>
+                    <form method="POST" action="{% url 'delete_project' x.id %}"><button>delete</button></form>
                 </td>
 	      </tr>
 	      {% endfor %}

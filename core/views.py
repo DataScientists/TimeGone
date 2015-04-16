@@ -1,5 +1,8 @@
 from __future__ import division
 
+import codecs
+import csv
+import cStringIO
 import json
 import logging
 
@@ -39,7 +42,7 @@ def timezone_form(request):
             if qs.exists():
                 kwargs['instance'] = qs[0]
             else:
-                obj, created = Timezone.objects.get_or_create(user=request.user)
+                obj = Timezone.objects.create(user=request.user)
                 kwargs['instance'] = obj
     if qs.exists():
         kwargs['initial'] = {'timezone': qs[0].timezone}
@@ -66,7 +69,7 @@ def settings(request):
             pf = PasswordForm()
             if tf.is_valid():
                 tz = tf.save()
-                messages.success(request, 
+                messages.success(request,
                                  'Timezone set to {}'.format(tz.timezone))
                 return redirect(request.path)
         else:
@@ -80,6 +83,36 @@ def settings(request):
 def parse_date(request, k):
     year, month, day = map(int, request.GET[k].split('-'))
     return date(year, month, day)
+
+
+class UnicodeWriter:
+    """
+    A CSV writer which will write rows to CSV file "f",
+    which is encoded in the given encoding.
+    """
+
+    def __init__(self, f, dialect=csv.excel, encoding="utf-8", **kwds):
+        # Redirect output to a queue
+        self.queue = cStringIO.StringIO()
+        self.writer = csv.writer(self.queue, dialect=dialect, **kwds)
+        self.stream = f
+        self.encoder = codecs.getincrementalencoder(encoding)()
+
+    def writerow(self, row):
+        self.writer.writerow([s.encode("utf-8") for s in row])
+        # Fetch UTF-8 output from the queue ...
+        data = self.queue.getvalue()
+        data = data.decode("utf-8")
+        # ... and reencode it into the target encoding
+        data = self.encoder.encode(data)
+        # write to the target stream
+        self.stream.write(data)
+        # empty queue
+        self.queue.truncate(0)
+
+    def writerows(self, rows):
+        for row in rows:
+            self.writerow(row)
 
 
 @login_required
@@ -99,47 +132,61 @@ def report(request):
     projects = list((list(x) for x in
                      Project.objects.filter(user=request.user).
                      order_by('-name').values_list('id', 'name')))
-    tracked_time = list((json.dumps({
-        # remove button
-        'delete_url': reverse('time_delete', args=(x.id,)),
-        # project
-        'project_name': x.project.name,
-        'project_pk': x.id,
-        'project_url': reverse('time_project_api', args=(x.id,)),
-        'projects': projects,
-        # hours
-        'hours': x.hours,
-        'hours_url': reverse('time_hours_api', args=(x.id,)),
-        # description
-        'description': x.description,
-        'description_url': reverse('time_description_api', args=(x.id,)),
-        # track date
-        'track_date': fdate(x.track_date),
-        'track_date_url': reverse('time_track_date_api', args=(x.id,))
-    }) for x in qs))
-    return render(request, "report.html", {
-        'start': fdate(start),
-        'end': fdate(end),
-        'tracked_time': tracked_time,
-        'next': request.get_full_path()})
+    if 'csv' in request.GET:
+        response = HttpResponse(content_type='text/csv')
+        fname = "%s.%s.%s.csv" % (request.user.email, str(start), str(end))
+        response['Content-Disposition'] = 'attachment; filename="%s"' % fname
+        spamwriter = UnicodeWriter(response)
+        spamwriter.writerow(('project_name', 'hours',
+                             'description', 'track_date'))
+        for x in qs:
+            spamwriter.writerow((x.project.name, str(x.hours),
+                                 x.description, fdate(x.track_date)))
+
+        return response
+    else:
+        tracked_time = list((json.dumps({
+            # remove button
+            'delete_url': reverse('time_delete', args=(x.id,)),
+            # project
+            'project_name': x.project.name,
+            'project_pk': x.id,  # strange name for tracked time ID
+            'project_url': reverse('time_project_api', args=(x.id,)),
+            'projects': projects,
+            # hours
+            'hours': x.hours,
+            'hours_url': reverse('time_hours_api', args=(x.id,)),
+            # description
+            'description': x.description,
+            'description_url': reverse('time_description_api', args=(x.id,)),
+            # track date
+            'track_date': fdate(x.track_date),
+            'track_date_url': reverse('time_track_date_api', args=(x.id,))
+        }) for x in qs))
+        if '?' in request.get_full_path():
+            csv_link = request.get_full_path() + '&csv'
+        else:
+            csv_link = request.get_full_path() + '?csv'
+        return render(request, "report.html", {
+            'start': fdate(start),
+            'end': fdate(end),
+            'tracked_time': tracked_time,
+            'next': request.get_full_path(),
+            'csv_link': csv_link
+        })
 
 
 def get_user_date(user, d=None):
-    if user.timezone_set.exists():
-        tz = user.timezone_set.all()[0].timezone
-        try:
-            if d is None:
-                a = arrow.now(tz)
-            else:
-                a = arrow.Arrow.strptime(d, '%Y-%m-%d', tz)
-        except arrow.parser.ParserError:
-            logging.exception('invalid tz %s for user %s', tz, user.id)
-            if d is None:
-                a = arrow.utcnow()
-            else:
-                a = arrow.Arrow.strptime(d, '%Y-%m-%d')
-    else:
-        logging.error('missing tz for user %s', user.id)
+    if not user.timezone_set.exists():
+        Timezone.objects.create(user=user)
+    tz = user.timezone_set.all()[0].timezone
+    try:
+        if d is None:
+            a = arrow.now(tz)
+        else:
+            a = arrow.Arrow.strptime(d, '%Y-%m-%d', tz)
+    except arrow.parser.ParserError:
+        logging.exception('invalid tz %s for user %s', tz, user.id)
         if d is None:
             a = arrow.utcnow()
         else:
@@ -268,6 +315,7 @@ def register(request):
                         username=register_f.cleaned_data['username'],
                         password=register_f.cleaned_data['password'])
                     login(request, user)
+                    Timezone.objects.create(user=user)
                     return redirect('dashboard')
         elif a == 'login':
             register_f = RegisterForm()
@@ -441,3 +489,15 @@ def time_track_date_api(request, pk):
     tt.track_date = request.POST['track_date']
     tt.save()
     return HttpResponse('')
+
+
+@require_http_methods(['POST'])
+@login_required
+@csrf_exempt
+def delete_project(request, pk):
+    project = Project.objects.get(user=request.user, pk=pk)
+    deleted_project_id = project.pk
+    TrackedTime.objects.filter(project=project).update(
+        project=None, deleted_project_id=deleted_project_id)
+    project.delete()
+    return redirect('projects')
