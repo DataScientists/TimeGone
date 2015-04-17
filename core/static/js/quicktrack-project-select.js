@@ -11,6 +11,16 @@ var pid = (function(){
 })();
 
 (function(React){
+  var name_by_id = function(project_id){
+    for (var i = 0; i < window.colored.length; i++){
+      var x = window.colored[i];
+      if (x[1][1] == project_id){
+        return x[1][0];
+      }
+    }
+    return '';
+  };
+
   var project_el = document.getElementById('id_project');
   var target_el = document.createElement('div');
   target_el.setAttribute('id', 'quicktrack-project-select');
@@ -22,6 +32,7 @@ var pid = (function(){
     },
     render: function(){
       var className = "top " + this.props.color;
+      var bottomClassName = "bottom";
       var tableClassName = "quicktrack-project";
       if (this.props.selected){
         className = className + " selected";
@@ -29,18 +40,19 @@ var pid = (function(){
       }
       return React.createElement("a", {href: "#", onClick: this.onClick}, React.createElement("table", {className: tableClassName}, 
         React.createElement("tr", null, React.createElement("td", {className: className}, " ")), 
-        React.createElement("tr", null, React.createElement("td", null, "(", this.props.name, ")"))
+        React.createElement("tr", null, React.createElement("td", {className: bottomClassName}, "(", this.props.name, ")"))
         ));
     }
   });
 
   var CreateBox = React.createClass({displayName: 'CreateBox',
     render: function(){
+      var bottomClassName = "bottom";
       var className = "top " + this.props.color;
       var href = window.create_project_url + "?color=" + this.props.color + "&back=" + window.location.pathname;
       return React.createElement("a", {href: href}, React.createElement("table", {className: "quicktrack-project"}, 
         React.createElement("tr", null, React.createElement("td", {className: className}, " ")), 
-        React.createElement("tr", null, React.createElement("td", null, "(   )"))
+        React.createElement("tr", null, React.createElement("td", {className: bottomClassName}, "(   )"))
         ));
     }
   });
@@ -48,7 +60,7 @@ var pid = (function(){
   var QuicktrackColorSelect = React.createClass({displayName: 'QuicktrackColorSelect',
     render: function(){
       var boxes = [];
-      for (var i = 0; i<window.colored.length; i++){
+      for (var i = 0; i < window.colored.length; i++){
         var x = window.colored[i];
         if (x[1]){
           var selected = x[1][1] == this.props.project_id;
@@ -57,6 +69,14 @@ var pid = (function(){
           boxes.push(React.createElement(CreateBox, {color: x[0], key: i, onClick: this.handleClick}));
         }
       }
+      var project_name_jsx;
+      if (this.props.project_name){
+        project_name_jsx = React.createElement("div", {className: "col-md-10 "}, 
+              React.createElement("div", null, React.createElement("i", null, "Project selected: ", this.props.project_name))
+              );
+      } else {
+        project_name_jsx = React.createElement("div", null);
+      }
       return React.createElement("div", {id: "div_id_hours", className: "form-group"}, 
         React.createElement("div", {className: "col-md-10 "}, 
         React.createElement("div", {className: "wrapper"}, 
@@ -64,7 +84,8 @@ var pid = (function(){
         boxes
       )
         )
-        )
+        ), 
+        project_name_jsx
         );
     }
   });
@@ -72,14 +93,18 @@ var pid = (function(){
   var QuicktrackContainer = React.createClass({displayName: 'QuicktrackContainer',
     getInitialState: function(){
       if (pid){
-        return {project_id: pid};
+        return {project_id: pid,
+                project_name: name_by_id(pid)};
       } else {
-        return {project_id: false};
+        return {project_id: false,
+                project_name: ''};
       }
     },
     handleClick: function(childComponent){
       var project_id = childComponent.props.project_id;
-      this.setState({'project_id': project_id});
+      var new_state = {'project_id': project_id,
+                       'project_name': name_by_id(project_id)};
+      this.setState(new_state);
       document.getElementById('id_project').value = project_id;
       var f = document.getElementById('quick-track-form');
       var u = new Url(f.action);
@@ -87,7 +112,7 @@ var pid = (function(){
       f.action = u.toString();
     },
     render: function(){
-      return React.createElement(QuicktrackColorSelect, {key: "1", project_id: this.state.project_id, handleClick: this.handleClick});
+      return React.createElement(QuicktrackColorSelect, {key: "1", project_id: this.state.project_id, handleClick: this.handleClick, project_name: this.state.project_name});
     }
   });
   React.render(React.createElement(QuicktrackContainer, null), target_el);
