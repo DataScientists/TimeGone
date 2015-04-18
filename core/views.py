@@ -125,7 +125,7 @@ def report(request):
         start = a.date()
         end = start + timedelta(days=1)
 
-    qs = TrackedTime.objects.filter(
+    qs = TrackedTime.objects.exclude(project=None).filter(
         user=request.user,
         track_date__gte=start,
         track_date__lte=end).order_by('id')
