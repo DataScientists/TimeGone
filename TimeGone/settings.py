@@ -69,9 +69,9 @@ WSGI_APPLICATION = 'TimeGone.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.mysql',
-        'NAME': 'bigtimestudy001',
+        'NAME': 'TimeGone',
         'USER': 'root',
-        'PASSWORD': '31g71m3study',
+        'PASSWORD': 'password',
         'HOST': '127.0.0.1',
         'PORT': '3306',
     }
