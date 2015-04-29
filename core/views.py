@@ -158,7 +158,7 @@ def report(request):
             'hours': x.hours,
             'hours_url': reverse('time_hours_api', args=(x.id,)),
             # description
-            'description': x.description,
+            'description': x.description.replace("'",""),
             'description_url': reverse('time_description_api', args=(x.id,)),
             # created date
             'created_at': fdate(x.created_at),
