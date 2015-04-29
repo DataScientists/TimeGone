@@ -138,11 +138,12 @@ def report(request):
         response['Content-Disposition'] = 'attachment; filename="%s"' % fname
         spamwriter = UnicodeWriter(response)
         spamwriter.writerow(('project_name', 'hours',
+                             'satisfaction','tags',
                              'description', 'track_date', 'created_at'))
         for x in qs:
-            spamwriter.writerow((x.project.name, str(x.hours),
-                                 x.description, fdate(x.track_date),
-                                 x.created_at))
+            spamwriter.writerow((x.project.name, str(x.hours), str(x.satisfaction),
+                                 x.tags, x.description, fdate(x.track_date),
+                                 fdatetime(x.created_at)))
 
         return response
     else:
@@ -161,7 +162,7 @@ def report(request):
             'description': x.description.replace("'",""),
             'description_url': reverse('time_description_api', args=(x.id,)),
             # created date
-            'created_at': fdate(x.created_at),
+            'created_at': fdatetime(x.created_at),
             # track date
             'track_date': fdate(x.track_date),
             'track_date_url': reverse('time_track_date_api', args=(x.id,))
@@ -232,6 +233,9 @@ def get_graph(user, date):
 
 def fdate(x):
     return formats.date_format(x, 'SHORT_DATE_FORMAT')
+
+def fdatetime(x):
+    return formats.date_format(x, 'SHORT_DATETIME_FORMAT')
 
 
 @login_required
