@@ -10,7 +10,6 @@ from datetime import date, timedelta
 
 import arrow
 
-from django.conf import settings as django_settings
 from django.core.urlresolvers import reverse
 from django.db.models import Sum
 from django.db.utils import IntegrityError
@@ -30,7 +29,7 @@ from constants import abbr2color, COLORS, color2abbr
 from forms import (
     RegisterForm, LoginForm, TrackTimeForm, ProjectForm,
     PasswordForm, TimezoneForm, QuickTrackForm)
-from models import Project, TrackedTime, Timezone
+from models import Project, TrackedTime, Timezone, Tag
 
 
 def timezone_form(request):
@@ -218,9 +217,9 @@ def track(request, _id):
             return redirect('projects')
     else:
         f = TrackTimeForm()
-    return render(request, 
-                  'track.html', 
-                  {'form': f, 
+    return render(request,
+                  'track.html',
+                  {'form': f,
                    'project': project})
 
 
@@ -390,6 +389,11 @@ def quick_track(request):
             t.track_date = selected_date_from_get(request)
             t.user = request.user
             t.save()
+            for tag_name in f.data['tags'].split(','):
+                tag, created = Tag.objects.get_or_create(name=tag_name)
+                if created:
+                    tag.save()
+                    tag.times.add(t)
             messages.success(
                 request,
                 'Added {} hours to project "{}" at {}'.format(
@@ -399,16 +403,18 @@ def quick_track(request):
                 ))
             today = get_user_date(request.user).date()
             if t.track_date == today:
+
                 return redirect('dashboard')
             else:
                 url = reverse('dashboard') + '?date=%s' % fdate(t.track_date)
                 return HttpResponseRedirect(url)
     else:
         f = quick_track_form(projects, request.GET)
+    tag_data = list(Tag.objects.all().values_list('name', flat=True))
     return render(request, 'quick_track.html', {
         'form': f,
         'colored': prepare_colored_projects(projects),
-        'tag_data': django_settings.CATEGORIES})
+        'tag_data': json.dumps(tag_data)})
 
 
 @require_http_methods(['POST'])
@@ -506,3 +512,24 @@ def delete_project(request, pk):
         project=None, deleted_project_id=deleted_project_id)
     project.delete()
     return redirect('projects')
+
+
+@require_http_methods(['GET', 'POST'])
+@login_required
+@csrf_exempt
+def time_tag(request):
+    if request.method == 'GET':
+        qs = Tag.objects.all()
+        if 'term' in request.GET:
+            qs = qs.filter(name__icontains=request.GET['term'])
+        response = [{'label': x, 'choice': x} for x in
+                    qs.values_list('name', flat=True)]
+    if request.method == 'POST':
+        if 'name' in request.POST:
+            tag, created = Tag.objects.get_or_create(name=request)
+            if created:
+                tag.save()
+            response = {'ok': 1}
+        else:
+            response = {'ok': 0}
+    return HttpResponse(json.dumps(response))

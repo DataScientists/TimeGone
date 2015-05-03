@@ -66,21 +66,44 @@ class SatisfactionSlider(forms.NumberInput):
         if value:
             tag_attrs['value'] = value
         shadowed = ['type']
-        attr_insertion = u' '.join([u'%s="%s"' % (k, v) for k, v in 
+        attr_insertion = u' '.join([u'%s="%s"' % (k, v) for k, v in
                                     tag_attrs.items() if k not in shadowed])
-        tag_line = u'<input type="range" min="0" max="100" step="10" %s />' % attr_insertion
+        tag_line = u'''<input type="range" min="0"
+        max="100" step="10" %s />''' % attr_insertion
+        return mark_safe(tag_line)
+
+
+class TagitWidget(forms.TextInput):
+    def render(self, name, value, attrs=None):
+        super(TagitWidget, self).render(name, value, attrs)
+        tag_attrs = {k: v for k, v in attrs.items()}
+        if name:
+            tag_attrs['name'] = name
+        if value:
+            tag_attrs['value'] = value
+        if 'style' in tag_attrs:
+            tag_attrs['style'] += '; display: none !important'
+        else:
+            tag_attrs['style'] = 'display: none'
+        shadowed = ['type']
+        attr_insertion = u' '.join([u'%s="%s"' % (k, v) for k, v in
+                                    tag_attrs.items() if k not in shadowed])
+        tag_line = u'''<input style="display: none;" %s />
+        <ul id="tagitTags"></ul>''' % attr_insertion
         return mark_safe(tag_line)
 
 
 class QuickTrackForm(forms.ModelForm):
     class Meta:
         model = TrackedTime
-        exclude = ('user', 'created_at', 'manual_date', 'track_date')
+        exclude = ('user', 'created_at', 'manual_date',
+                   'track_date', 'deleted_project_id')
 
     hours = forms.FloatField(widget=forms.NumberInput(
         attrs={'min': 0}))
     project = forms.ModelChoiceField(queryset=Project.objects.all(),
                                      widget=forms.HiddenInput)
+    tags = forms.CharField(widget=TagitWidget)
     satisfaction = forms.IntegerField(widget=SatisfactionSlider)
 
 

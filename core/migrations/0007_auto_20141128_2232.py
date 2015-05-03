@@ -21,7 +21,8 @@ class Migration(migrations.Migration):
         migrations.AlterField(
             model_name='timezone',
             name='timezone',
-            field=timezone_field.fields.TimeZoneField(default=b'Europe/London'),
+            field=timezone_field.fields.TimeZoneField(
+                default=b'Europe/London'),
             preserve_default=True,
         ),
     ]

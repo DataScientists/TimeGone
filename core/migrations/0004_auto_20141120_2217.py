@@ -21,7 +21,8 @@ class Migration(migrations.Migration):
         migrations.AlterField(
             model_name='trackedtime',
             name='hours',
-            field=models.FloatField(validators=[django.core.validators.MinValueValidator(0)]),
+            field=models.FloatField(
+                validators=[django.core.validators.MinValueValidator(0)]),
             preserve_default=True,
         ),
     ]

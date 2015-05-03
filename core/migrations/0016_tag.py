@@ -7,18 +7,19 @@ from django.db import models, migrations
 class Migration(migrations.Migration):
 
     dependencies = [
+        ('core', '0015_auto_20150414_0805'),
     ]
 
     operations = [
         migrations.CreateModel(
-            name='Project',
+            name='Tag',
             fields=[
                 ('id', models.AutoField(verbose_name='ID',
                                         serialize=False,
                                         auto_created=True,
                                         primary_key=True)),
                 ('name', models.CharField(max_length=255)),
-                ('description', models.TextField()),
+                ('times', models.ManyToManyField(to='core.TrackedTime')),
             ],
             options={
             },

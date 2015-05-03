@@ -10,7 +10,6 @@
 	    <legend>Track Time for {{ project.name }}</legend>
 	    {% csrf_token %}
 	    {{ form|as_bootstrap_horizontal }}
-
           <!-- <p>Input tags here: -->
           <!-- <input id="tag1" value="tags" /></p> -->
 	    <div class="form-actions">
@@ -159,6 +158,8 @@ table.quicktrack-project td.fd {
     line-height: 1.5;
     }
 </style>
+<link href="{{ STATIC_URL }}vendors/tagit/6ccd2de95e/css/jquery.tagit.css" rel="stylesheet" type="text/css">
+<link href="{{ STATIC_URL }}vendors/tagit/6ccd2de95e/css/tagit.ui-zendesk.css" rel="stylesheet" type="text/css">
 {% endblock %}
 
 {% block js %}
@@ -168,13 +169,9 @@ window.create_project_url = '{% url "create" %}';
 </script>
 <script src="{{ STATIC_URL }}vendors/jqui/jquery-ui.js"></script>
 <script type="text/javascript" src="{{ STATIC_URL }}js/quicktrack-project-select.js"></script>
-<script type="text/javascript" src="{{ STATIC_URL }}js/autocomplete.widget.js"></script>
 <script type="text/javascript">
-    window.tag_data = [
-    {% for label, category in tag_data %}
-    {'label': '{{ label|addslashes }}', 'category': '{{ category|addslashes }}'}{% if forloop.last %}{% else %}, {% endif %}
-    {% endfor %}
-    ];
+    window.tag_autocomplete_source = {{ tag_data|safe }};
 </script>
-<script type="text/javascript" src="{{ STATIC_URL }}js/tag.autocomplete.js"></script>
+<script src="{{ STATIC_URL }}vendors/tagit/6ccd2de95e/js/tag-it.js" type="text/javascript" charset="utf-8"></script>
+<script type="text/javascript" src="{{ STATIC_URL }}js/tagit.js"></script>
 {% endblock %}

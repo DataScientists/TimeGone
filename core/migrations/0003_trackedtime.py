@@ -16,7 +16,9 @@ class Migration(migrations.Migration):
         migrations.CreateModel(
             name='TrackedTime',
             fields=[
-                ('id', models.AutoField(verbose_name='ID', serialize=False, auto_created=True, primary_key=True)),
+                ('id', models.AutoField(verbose_name='ID',
+                                        serialize=False,
+                                        auto_created=True, primary_key=True)),
                 ('created_at', models.DateTimeField(auto_now_add=True)),
                 ('hours', models.FloatField()),
                 ('project', models.ForeignKey(to='core.Project')),

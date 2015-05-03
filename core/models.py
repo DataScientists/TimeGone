@@ -26,7 +26,7 @@ class TrackedTime(models.Model):
     created_at = models.DateTimeField(auto_now_add=True)
     hours = models.FloatField(validators=[MinValueValidator(0)])
     satisfaction = models.IntegerField(default=0)
-    tags = models.CharField(max_length=255,default='')
+    # tags = models.CharField(max_length=255,default='')
     description = models.CharField(max_length=255, default='')
     manual_date = models.BooleanField(default=False)
     deleted_project_id = models.IntegerField(null=True)
@@ -35,3 +35,8 @@ class TrackedTime(models.Model):
 class Timezone(models.Model):
     user = models.ForeignKey(User)
     timezone = TimeZoneField(default='Europe/London')
+
+
+class Tag(models.Model):
+    name = models.CharField(max_length=255)
+    times = models.ManyToManyField(TrackedTime)
