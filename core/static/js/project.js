@@ -8,7 +8,6 @@
       return {text: this.props.text};
     },
     render: function(){
-      console.log('rendered inside');
       return React.createElement("div", {onClick: this.handleClick}, this.props.text);
     }
   });
@@ -27,8 +26,7 @@
 
     },
     handleBlur: function(e){
-      e.preventDefault();
-      this.props.handle(false, this.state.initial_text);
+      this.handleSubmit(e);
     },
     handleChange: function(e){
       this.setState({'text': e.target.value});

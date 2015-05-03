@@ -18,7 +18,7 @@ jQuery(function($){
              });
     },
     render: function(){
-      return React.createElement("button", {className: "btn btn-default", 'aria-label': "remove", onClick: this.props.unmount}, 
+      return React.createElement("button", {className: "btn btn-default", 'aria-label': "remove", onClick: this.onClick}, 
         React.createElement("span", {className: "glyphicon glyphicon-trash", 'aria-hidden': "true"})
         );
     }
@@ -70,6 +70,21 @@ jQuery(function($){
       }
     }
   });
+
+  var EditableCreatedAt = React.createClass({displayName: 'EditableTrackDate',
+    getInitialState: function(){
+      return {
+        'state': 'view',
+        'created_at': this.props.created_at
+      };
+    },
+    render: function(){
+      if (this.state.state == 'view'){
+        return React.createElement("span", {onClick: this.onClick}, this.state.created_at);
+      }
+    }
+  });
+
   var EditableDescription = React.createClass({displayName: 'EditableDescription',
     getInitialState: function(){
       return {
@@ -129,7 +144,6 @@ jQuery(function($){
       this.setState({'hours': event.target.value});
     },
     render: function(){
-      console.log(this.state);
       if (this.state.state == 'view'){
         return React.createElement("span", {onClick: this.onClick}, this.state.hours);
       } else {
@@ -208,6 +222,7 @@ jQuery(function($){
         React.createElement("td", null, React.createElement(EditableHours, {hours: this.props.data.hours, url: this.props.data.hours_url})), 
         React.createElement("td", null, React.createElement(EditableDescription, {description: this.props.data.description, url: this.props.data.description_url})), 
         React.createElement("td", null, React.createElement(EditableTrackDate, {track_date: this.props.data.track_date, url: this.props.data.track_date_url, unmount: this.unmount})), 
+        React.createElement("td", null, React.createElement(EditableCreatedAt, {created_at: this.props.data.created_at, url: this.props.data.created_at_url, unmount: this.unmount})),
         React.createElement("td", null, React.createElement(RemoveButton, {unmount: this.unmount, url: this.props.data.delete_url}))
       );
     },
