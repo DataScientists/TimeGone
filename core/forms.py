@@ -69,7 +69,7 @@ class SatisfactionSlider(forms.NumberInput):
         attr_insertion = u' '.join([u'%s="%s"' % (k, v) for k, v in
                                     tag_attrs.items() if k not in shadowed])
         tag_line = u'''<input type="range" min="0"
-        max="100" step="10" %s />''' % attr_insertion
+        max="100" step="1" %s />''' % attr_insertion
         return mark_safe(tag_line)
 
 
