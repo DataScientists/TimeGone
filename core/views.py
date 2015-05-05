@@ -138,11 +138,11 @@ def report(request):
         response['Content-Disposition'] = 'attachment; filename="%s"' % fname
         spamwriter = UnicodeWriter(response)
         spamwriter.writerow(('project_name', 'hours',
-                             'satisfaction','tags',
+                             'satisfaction',
                              'description', 'track_date', 'created_at'))
         for x in qs:
             spamwriter.writerow((x.project.name, str(x.hours), str(x.satisfaction),
-                                 x.tags, x.description, fdate(x.track_date),
+                                 x.description, fdate(x.track_date),
                                  fdatetime(x.created_at)))
 
         return response
