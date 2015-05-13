@@ -400,7 +400,7 @@ def quick_track(request):
                 tag, created = Tag.objects.get_or_create(name=tag_name)
                 if created:
                     tag.save()
-                    tag.times.add(t)
+                tag.times.add(t)
             messages.success(
                 request,
                 'Added {} hours to project "{}" at {}'.format(
